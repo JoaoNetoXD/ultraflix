@@ -1,6 +1,18 @@
 import React from "react";
 import { motion } from "motion/react";
-import { Trophy, Clapperboard, Popcorn, Baby, ChevronRight, Star, BadgeCheck } from "lucide-react";
+import { Trophy, Clapperboard, Popcorn, Baby, ChevronRight, Star, BadgeCheck, MessageCircle } from "lucide-react";
+import { buildInterestWhatsAppLink } from "../config";
+import { trackWhatsAppClick } from "../tracking";
+
+// Slug simples para identificar a origem do clique no tracking
+function slug(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
 
 // Muro de catálogo: cartazes estilizados com fotos reais (sem marcas de terceiros).
 // Futebol misturado no meio dos gêneros — vitrine equilibrada para qualquer lead.
@@ -143,31 +155,37 @@ export default function AllInOneShowcase({ onScrollToPlans }: AllInOneShowcasePr
       <div className="relative z-10 space-y-4 mb-12 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
         <div className="flex w-max gap-4 animate-marquee-left">
           {[...POSTERS_ROW_A, ...POSTERS_ROW_A].map((p, idx) => (
-            <PosterCard key={`a-${idx}`} {...p} />
+            <PosterCard key={`a-${idx}`} genre={p.genre} image={p.image} rating={p.rating} live={"live" in p ? p.live : false} />
           ))}
         </div>
         <div className="flex w-max gap-4 animate-marquee-right">
           {[...POSTERS_ROW_B, ...POSTERS_ROW_B].map((p, idx) => (
-            <PosterCard key={`b-${idx}`} {...p} />
+            <PosterCard key={`b-${idx}`} genre={p.genre} image={p.image} rating={p.rating} live={"live" in p ? p.live : false} />
           ))}
         </div>
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4">
 
-        {/* 4 category cards — cobertura equilibrada de nichos */}
+        {/* 4 category cards — clicáveis: abrem o WhatsApp já com o interesse do lead */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {CATEGORY_CARDS.map((card, idx) => (
-            <motion.div
+            <motion.a
               key={idx}
+              href={buildInterestWhatsAppLink(card.title)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick(`categoria_${slug(card.title)}`)}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4 }}
+              whileTap={{ scale: 0.97 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.35, delay: idx * 0.08 }}
-              className={`relative rounded-2xl p-5 border backdrop-blur-sm flex flex-col ${
+              className={`group/card relative rounded-2xl p-5 border backdrop-blur-sm flex flex-col cursor-pointer transition-colors ${
                 card.live
-                  ? "bg-gradient-to-b from-red-950/40 to-[#0b0b0b]/90 border-red-600/40"
-                  : "bg-[#0c0c0c]/85 border-gray-900/70 hover:border-red-600/25 transition-colors"
+                  ? "bg-gradient-to-b from-red-950/40 to-[#0b0b0b]/90 border-red-600/40 hover:border-red-500/70"
+                  : "bg-[#0c0c0c]/85 border-gray-900/70 hover:border-emerald-600/40"
               }`}
             >
               <div className="flex items-center justify-between mb-3">
@@ -185,26 +203,38 @@ export default function AllInOneShowcase({ onScrollToPlans }: AllInOneShowcasePr
               <h3 className="font-display font-black text-base text-white uppercase tracking-tight mb-1.5">
                 {card.title}
               </h3>
-              <p className="font-sans text-[11px] text-gray-400 leading-relaxed">
+              <p className="font-sans text-[11px] text-gray-400 leading-relaxed mb-3">
                 {card.desc}
               </p>
-            </motion.div>
+
+              {/* Micro-CTA: sinaliza que o card é clicável e converte */}
+              <span className="mt-auto inline-flex items-center gap-1 font-display font-bold text-[10px] text-emerald-400 uppercase tracking-wider group-hover/card:text-emerald-300 transition-colors">
+                <MessageCircle className="w-3 h-3" />
+                Testar grátis agora
+                <ChevronRight className="w-3 h-3 group-hover/card:translate-x-0.5 transition-transform" />
+              </span>
+            </motion.a>
           ))}
         </div>
 
-        {/* Chips: gêneros + campeonatos misturados */}
+        {/* Chips clicáveis: cada gênero abre o WhatsApp com o interesse marcado */}
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           {CHIPS.map((chip, idx) => (
-            <motion.span
+            <motion.a
               key={idx}
+              href={buildInterestWhatsAppLink(chip)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick(`chip_${slug(chip)}`)}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
+              whileTap={{ scale: 0.92 }}
               viewport={{ once: true, margin: "-30px" }}
               transition={{ duration: 0.25, delay: idx * 0.04 }}
-              className="font-display font-bold text-[11px] sm:text-xs text-gray-300 bg-[#101010]/90 border border-gray-900 px-3.5 py-2 rounded-full uppercase tracking-wide hover:border-red-600/40 hover:text-white transition-colors"
+              className="font-display font-bold text-[11px] sm:text-xs text-gray-300 bg-[#101010]/90 border border-gray-900 px-3.5 py-2 rounded-full uppercase tracking-wide hover:border-emerald-600/50 hover:text-white active:bg-emerald-950/30 transition-colors cursor-pointer"
             >
               {chip}
-            </motion.span>
+            </motion.a>
           ))}
         </div>
 

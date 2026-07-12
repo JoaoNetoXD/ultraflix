@@ -25,13 +25,28 @@ export default function Plans() {
         </div>
 
         {/* Trial banner */}
-        <div className="max-w-2xl mx-auto mb-12 bg-emerald-950/20 border border-emerald-700/30 rounded-2xl px-5 py-4 flex items-center justify-center gap-3 text-center">
-          <Gift className="w-6 h-6 text-emerald-400 shrink-0" />
-          <p className="font-sans text-xs sm:text-sm text-emerald-300">
-            <strong className="font-display uppercase tracking-wide">Teste grátis de 30 minutos</strong>
-            <span className="text-emerald-400/80"> — sem cartão, sem cadastro, sem compromisso. Liberado na hora pelo WhatsApp.</span>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.4 }}
+          className="max-w-2xl mx-auto mb-12 bg-emerald-950/20 border border-emerald-700/30 rounded-2xl px-5 py-4 text-center"
+        >
+          <div className="flex items-center justify-center gap-3">
+            <Gift className="w-6 h-6 text-emerald-400 shrink-0 animate-float" />
+            <p className="font-sans text-xs sm:text-sm text-emerald-300">
+              <strong className="font-display uppercase tracking-wide">Teste grátis de 30 minutos</strong>
+              <span className="text-emerald-400/80"> — sem cartão, sem cadastro, sem compromisso. Liberado na hora pelo WhatsApp.</span>
+            </p>
+          </div>
+          <p className="mt-2.5 font-sans text-[11px] text-gray-400 flex items-center justify-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            Equipe online agora — resposta em segundos
           </p>
-        </div>
+        </motion.div>
 
         {/* Plans Grid (Vertical-first/responsive layout matching Streaming Platforms) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch max-w-5xl mx-auto">
@@ -138,17 +153,17 @@ export default function Plans() {
                     rel="noopener noreferrer"
                     onClick={() => trackWhatsAppClick(`plano_${plan.id}`, { value: plan.price, currency: "BRL" })}
                     id={`btn_assinar_${plan.id}`}
-                    className={`w-full font-display font-bold text-sm py-3.5 rounded-xl transition-all duration-200 uppercase tracking-wider cursor-pointer flex items-center justify-center space-x-1.5 ${
+                    className={`w-full font-display font-bold text-[12px] min-[420px]:text-[13px] lg:text-sm py-3.5 px-2 rounded-xl transition-all duration-200 uppercase tracking-wide cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
                       isRecommended
-                        ? "bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.98] text-white shadow-lg shadow-green-600/25"
+                        ? "bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.98] text-white shadow-lg shadow-green-600/25 animate-pulse-glow-green"
                         : "bg-[#181818] hover:bg-[#222] active:scale-[0.98] text-white border border-gray-800"
                     }`}
                   >
-                    <MessageCircle className={`w-4 h-4 ${isRecommended ? "" : "text-[#25D366]"}`} />
+                    <MessageCircle className={`w-4 h-4 shrink-0 ${isRecommended ? "" : "text-[#25D366]"}`} />
                     <span>{plan.ctaText || "Falar no WhatsApp"}</span>
                   </a>
                   <p className="text-center text-[10px] text-gray-500 font-sans mt-2">
-                    Teste 30 min grátis • ativação em 5 min via WhatsApp
+                    Teste grátis de 30 min antes de pagar
                   </p>
                 </div>
               </motion.div>

@@ -19,3 +19,11 @@ export function buildPlanWhatsAppLink(planTitle: string, priceLabel: string): st
     `Olá! Vim pelo site da ULTRAFLIX e me interessei pelo ${planTitle} (${priceLabel}). Quero começar com o teste grátis de 30 minutos! 🎬`
   );
 }
+
+// Mensagem quando o cliente clicou numa categoria/gênero de interesse.
+// O atendente já recebe o lead sabendo o que ele quer assistir.
+export function buildInterestWhatsAppLink(interest: string): string {
+  return buildWhatsAppLink(
+    `Olá! Vim pelo site da ULTRAFLIX e quero o teste grátis de 30 minutos. O que mais me interessa é: ${interest} 🎬`
+  );
+}

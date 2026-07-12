@@ -10,6 +10,7 @@ import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import ValueStack from "./components/ValueStack";
 import AllInOneShowcase from "./components/AllInOneShowcase";
+import SocialProofToast from "./components/SocialProofToast";
 import { TRIAL_WHATSAPP_LINK } from "./config";
 import { trackPixel, trackCustomPixel, trackWhatsAppClick } from "./tracking";
 
@@ -94,6 +95,9 @@ export default function App() {
 
       {/* === CONVERSION ELEMENTS === */}
 
+      {/* Prova social: atividade recente em rodízio */}
+      <SocialProofToast />
+
       {/* A. FLOATING WHATSAPP BUTTON (Target blank for safe redirection) */}
       <a
         href={TRIAL_WHATSAPP_LINK}
@@ -101,7 +105,7 @@ export default function App() {
         rel="noopener noreferrer"
         onClick={() => trackWhatsAppClick("botao_flutuante")}
         id="btn_whatsapp_flutuante"
-        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-50 bg-[#25D366] hover:bg-[#20ba5a] active:scale-95 text-white p-3.5 sm:p-4 rounded-full shadow-xl shadow-green-600/30 hover:shadow-green-600/50 hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center cursor-pointer group"
+        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-50 bg-[#25D366] hover:bg-[#20ba5a] active:scale-95 text-white p-3.5 sm:p-4 rounded-full shadow-xl shadow-green-600/30 hover:shadow-green-600/50 hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center cursor-pointer group animate-pulse-glow-green"
         title="Pedir teste grátis no WhatsApp"
       >
         <svg
@@ -138,7 +142,7 @@ export default function App() {
           rel="noopener noreferrer"
           onClick={() => trackWhatsAppClick("barra_fixa_mobile")}
           id="btn_sticky_mobile_whatsapp"
-          className="bg-[#25D366] active:scale-95 text-white font-display font-black text-xs px-5 py-3 rounded-xl uppercase tracking-wider shadow-lg shadow-green-600/20 cursor-pointer"
+          className="bg-[#25D366] active:scale-95 text-white font-display font-black text-xs px-5 py-3 rounded-xl uppercase tracking-wider shadow-lg shadow-green-600/20 cursor-pointer animate-heartbeat whitespace-nowrap"
         >
           Testar Grátis
         </a>

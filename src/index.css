@@ -32,6 +32,39 @@
     background-clip: text;
     color: transparent;
   }
+  /* Flutuação suave (badges e selos) */
+  .animate-float {
+    animation: floatY 3.5s ease-in-out infinite;
+  }
+  /* Batida dupla de coração para CTAs de máxima prioridade */
+  .animate-heartbeat {
+    animation: heartbeat 1.8s ease-in-out infinite;
+  }
+  /* Brilho verde pulsante para CTAs WhatsApp */
+  .animate-pulse-glow-green {
+    animation: pulseGlowGreen 2.2s ease-in-out infinite;
+  }
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes heartbeat {
+  0%, 40%, 100% { transform: scale(1); }
+  10% { transform: scale(1.04); }
+  20% { transform: scale(1); }
+  30% { transform: scale(1.04); }
+}
+
+@keyframes pulseGlowGreen {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.4), 0 0 50px rgba(37, 211, 102, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 38px rgba(37, 211, 102, 0.7), 0 0 85px rgba(37, 211, 102, 0.3);
+  }
 }
 
 @keyframes pulseGlow {

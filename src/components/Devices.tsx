@@ -41,9 +41,12 @@ export default function Devices() {
                 id={`device_card_${idx}`}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
+                whileHover={{ y: -4 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.35, delay: idx * 0.08 }}
-                className="bg-[#0e0e0e] border border-gray-900/60 rounded-2xl p-5 text-center flex flex-col items-center justify-center transition-all duration-200 hover:bg-[#121212] hover:border-red-600/20"
+                className={`bg-[#0e0e0e] border border-gray-900/60 rounded-2xl p-5 text-center flex flex-col items-center justify-center transition-all duration-200 hover:bg-[#121212] hover:border-red-600/20 ${
+                  idx === DEVICES.length - 1 ? "col-span-2 md:col-span-1 max-w-[240px] md:max-w-none w-full mx-auto" : ""
+                }`}
               >
                 {/* Icon Container with glowing background */}
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-600/10 to-red-600/0 border border-red-600/10 flex items-center justify-center text-red-500 mb-4 shadow-inner">
