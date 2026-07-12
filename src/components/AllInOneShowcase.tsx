@@ -219,7 +219,7 @@ export default function AllInOneShowcase({ onScrollToPlans }: AllInOneShowcasePr
             <ChevronRight className="w-5 h-5 ml-1.5 group-hover:translate-x-1 transition-transform" />
           </button>
           <p className="font-sans text-[11px] text-gray-500 mt-3">
-            Um plano só • Pix aprovado = acesso em 5 minutos • Garantia de 7 dias
+            Um plano só • Teste grátis de 30 min no WhatsApp • Garantia de 7 dias
           </p>
         </div>
 

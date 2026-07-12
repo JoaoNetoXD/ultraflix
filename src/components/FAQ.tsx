@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { FAQS } from "../data";
+import { buildWhatsAppLink } from "../config";
+import { trackWhatsAppClick } from "../tracking";
 
 export default function FAQ() {
   const [activeId, setActiveId] = useState<string | null>("faq1"); // default first item open
@@ -72,6 +74,24 @@ export default function FAQ() {
               </div>
             );
           })}
+        </div>
+
+        {/* Still have questions? -> WhatsApp */}
+        <div className="mt-10 text-center">
+          <p className="font-sans text-sm text-gray-400 mb-4">
+            Ficou com alguma dúvida? Fale com uma pessoa de verdade agora:
+          </p>
+          <a
+            href={buildWhatsAppLink("Olá! Estou no site da ULTRAFLIX e tenho uma dúvida antes de testar. 🙂")}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackWhatsAppClick("faq_duvidas")}
+            id="btn_faq_whatsapp"
+            className="inline-flex items-center justify-center bg-[#25D366] hover:bg-[#20ba5a] active:scale-95 text-white font-display font-bold text-xs sm:text-sm px-7 py-3.5 rounded-full shadow-lg shadow-green-600/25 transition-all duration-200 uppercase tracking-wider cursor-pointer space-x-2"
+          >
+            <MessageCircle className="w-4 h-4 fill-white/10" />
+            <span>Tirar Dúvida no WhatsApp</span>
+          </a>
         </div>
 
       </div>

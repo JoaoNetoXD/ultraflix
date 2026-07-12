@@ -5,10 +5,8 @@ import crypto from "node:crypto";
 const PIXEL_ID = "1341576367455992";
 const ALLOWED_EVENTS = new Set([
   "ViewContent",
-  "InitiateCheckout",
-  "AddPaymentInfo",
+  "Contact",
   "Lead",
-  "Purchase",
   "ViewPlans",
 ]);
 

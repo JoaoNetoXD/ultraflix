@@ -7,7 +7,6 @@ export interface Plan {
   badge?: string;
   savingsText?: string;
   recommended?: boolean;
-  pixCode?: string;
   /** Preço de referência (ex: 6x o plano mensal) exibido riscado */
   anchorPrice?: number;
   /** Equivalente mensal, ex: "R$ 9,17/mês" */
@@ -35,16 +34,4 @@ export interface FAQItem {
   id: string;
   question: string;
   answer: string;
-}
-
-export type PaymentMethod = "pix" | "card";
-
-export interface CheckoutForm {
-  name: string;
-  phone: string;
-  paymentMethod: PaymentMethod;
-  cardNumber?: string;
-  cardName?: string;
-  cardExpiry?: string;
-  cardCvv?: string;
 }

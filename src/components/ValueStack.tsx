@@ -66,7 +66,7 @@ export default function ValueStack({ onScrollToPlans }: ValueStackProps) {
                   ULTRAFLIX
                 </span>
               </div>
-              <span className="font-mono text-[10px] text-emerald-400 font-bold block mt-1">R$ 9,17 /mês</span>
+              <span className="font-mono text-[10px] text-emerald-400 font-bold block mt-1">R$ 10,83 /mês</span>
             </div>
           </div>
 

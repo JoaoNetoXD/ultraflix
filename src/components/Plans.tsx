@@ -1,29 +1,35 @@
 import React from "react";
-import { Check, Star, Award, Sparkles } from "lucide-react";
+import { Check, Award, Sparkles, MessageCircle, Gift } from "lucide-react";
 import { motion } from "motion/react";
 import { PLANS } from "../data";
-import { Plan } from "../types";
+import { buildPlanWhatsAppLink } from "../config";
+import { trackWhatsAppClick } from "../tracking";
 
-interface PlansProps {
-  onSelectPlan: (plan: Plan) => void;
-}
-
-export default function Plans({ onSelectPlan }: PlansProps) {
+export default function Plans() {
   return (
     <section id="planos-section" className="py-20 px-4 bg-[#0a0a0a] border-t border-b border-red-950/20">
       <div className="max-w-6xl mx-auto">
-        
+
         {/* Title Area */}
-        <div className="text-center mb-14">
+        <div className="text-center mb-10">
           <p className="font-mono text-xs font-semibold tracking-widest text-red-500 uppercase mb-3">
-            🔥 Oferta de lançamento — até 69% OFF
+            🔥 Oferta de lançamento — até 64% OFF
           </p>
           <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
-            ESCOLHA SEU PLANO E DÊ O <span className="text-gradient-fire">PLAY EM 5 MINUTOS</span>
+            ESCOLHA SEU PLANO E <span className="text-gradient-fire">TESTE GRÁTIS ANTES</span>
           </h2>
           <div className="w-12 h-1 bg-red-600 mx-auto mt-4 rounded-full" />
           <p className="font-sans text-sm sm:text-base text-gray-400 mt-4 max-w-lg mx-auto">
-            Pagou no Pix, recebeu o acesso. Sem cartão, sem fidelidade, sem letra miúda.
+            Você só paga depois de testar. Chame no WhatsApp, receba 30 minutos grátis e comprove a qualidade na sua TV.
+          </p>
+        </div>
+
+        {/* Trial banner */}
+        <div className="max-w-2xl mx-auto mb-12 bg-emerald-950/20 border border-emerald-700/30 rounded-2xl px-5 py-4 flex items-center justify-center gap-3 text-center">
+          <Gift className="w-6 h-6 text-emerald-400 shrink-0" />
+          <p className="font-sans text-xs sm:text-sm text-emerald-300">
+            <strong className="font-display uppercase tracking-wide">Teste grátis de 30 minutos</strong>
+            <span className="text-emerald-400/80"> — sem cartão, sem cadastro, sem compromisso. Liberado na hora pelo WhatsApp.</span>
           </p>
         </div>
 
@@ -32,6 +38,7 @@ export default function Plans({ onSelectPlan }: PlansProps) {
           {PLANS.map((plan, index) => {
             const isRecommended = plan.recommended;
             const hasBadge = !!plan.badge;
+            const priceLabel = `R$ ${plan.price.toFixed(2).replace(".", ",")}${plan.durationText}`;
 
             return (
               <motion.div
@@ -51,8 +58,8 @@ export default function Plans({ onSelectPlan }: PlansProps) {
                 {hasBadge && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                     <span className={`inline-flex items-center space-x-1 text-[10px] font-display font-black tracking-widest uppercase px-3 py-1 rounded-full text-white shadow-md ${
-                      plan.id === "semestral" 
-                        ? "bg-red-600 shadow-red-600/20" 
+                      plan.id === "semestral"
+                        ? "bg-red-600 shadow-red-600/20"
                         : "bg-amber-600 shadow-amber-600/20"
                     }`}>
                       {plan.id === "semestral" ? (
@@ -123,21 +130,25 @@ export default function Plans({ onSelectPlan }: PlansProps) {
                   </ul>
                 </div>
 
-                {/* Buy Button */}
+                {/* WhatsApp CTA */}
                 <div>
-                  <button
-                    onClick={() => onSelectPlan(plan)}
+                  <a
+                    href={buildPlanWhatsAppLink(plan.title, priceLabel)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackWhatsAppClick(`plano_${plan.id}`, { value: plan.price, currency: "BRL" })}
                     id={`btn_assinar_${plan.id}`}
                     className={`w-full font-display font-bold text-sm py-3.5 rounded-xl transition-all duration-200 uppercase tracking-wider cursor-pointer flex items-center justify-center space-x-1.5 ${
                       isRecommended
-                        ? "bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white shadow-lg shadow-red-600/20"
+                        ? "bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.98] text-white shadow-lg shadow-green-600/25"
                         : "bg-[#181818] hover:bg-[#222] active:scale-[0.98] text-white border border-gray-800"
                     }`}
                   >
-                    <span>{plan.ctaText || "Assinar"}</span>
-                  </button>
+                    <MessageCircle className={`w-4 h-4 ${isRecommended ? "" : "text-[#25D366]"}`} />
+                    <span>{plan.ctaText || "Falar no WhatsApp"}</span>
+                  </a>
                   <p className="text-center text-[10px] text-gray-500 font-sans mt-2">
-                    Pix • acesso liberado na hora
+                    Teste 30 min grátis • ativação em 5 min via WhatsApp
                   </p>
                 </div>
               </motion.div>
@@ -147,15 +158,13 @@ export default function Plans({ onSelectPlan }: PlansProps) {
 
         {/* Guarantee reassurance */}
         <p className="text-center text-emerald-400/90 font-sans text-xs mt-8 font-semibold">
-          ✓ Garantia de 7 dias — não gostou, devolvemos 100% do valor
+          ✓ Teste grátis de 30 min + garantia de 7 dias após a assinatura
         </p>
 
-        {/* Fast Security Notice */}
+        {/* No payment on site notice */}
         <p className="text-center text-gray-500 font-sans text-xs mt-3 flex items-center justify-center space-x-1">
-          <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-          </svg>
-          <span>Pagamento 100% criptografado e seguro</span>
+          <MessageCircle className="w-4 h-4 text-gray-600" />
+          <span>Atendimento humano no WhatsApp — tire dúvidas antes de decidir</span>
         </p>
 
       </div>

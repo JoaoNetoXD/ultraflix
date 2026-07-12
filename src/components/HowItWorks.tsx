@@ -1,6 +1,9 @@
 import React from "react";
 import { motion } from "motion/react";
+import { MessageCircle } from "lucide-react";
 import { HOW_IT_WORKS } from "../data";
+import { TRIAL_WHATSAPP_LINK } from "../config";
+import { trackWhatsAppClick } from "../tracking";
 
 export default function HowItWorks() {
   return (
@@ -17,7 +20,7 @@ export default function HowItWorks() {
           </h2>
           <div className="w-12 h-1 bg-red-600 mx-auto mt-4 rounded-full" />
           <p className="font-sans text-sm sm:text-base text-gray-400 mt-4">
-            Do primeiro clique ao primeiro play em menos de 1 minuto.
+            Do primeiro clique ao primeiro play em minutos — e você só paga depois de testar.
           </p>
         </div>
 
@@ -53,6 +56,24 @@ export default function HowItWorks() {
               </p>
             </motion.div>
           ))}
+        </div>
+
+        {/* CTA: start step 01 right now */}
+        <div className="text-center mt-12">
+          <a
+            href={TRIAL_WHATSAPP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackWhatsAppClick("como_funciona")}
+            id="btn_howitworks_whatsapp"
+            className="inline-flex items-center justify-center bg-[#25D366] hover:bg-[#20ba5a] active:scale-95 text-white font-display font-black text-xs sm:text-sm px-8 py-4 rounded-full shadow-lg shadow-green-600/25 transition-all duration-200 uppercase tracking-widest cursor-pointer space-x-2"
+          >
+            <MessageCircle className="w-4 h-4 fill-white/10" />
+            <span>Começar o Passo 01 Agora</span>
+          </a>
+          <p className="font-sans text-[11px] text-gray-500 mt-3">
+            Grátis • Sem cartão • Resposta em segundos
+          </p>
         </div>
 
       </div>

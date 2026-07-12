@@ -7,58 +7,58 @@ export const PLANS: Plan[] = [
     price: 29.90,
     durationText: "/mês",
     savingsText: "Preço cheio — sem desconto",
-    ctaText: "Começar Agora",
+    ctaText: "Testar Grátis Agora",
     features: [
+      "Teste grátis de 30 minutos antes de pagar",
       "Filmes, séries, novelas e esportes ao vivo",
       "2 telas simultâneas",
       "Qualidade Ultra HD 4K",
       "Suporte via WhatsApp",
       "Cancele a qualquer momento"
-    ],
-    pixCode: "00020101021226740014BR.GOV.BCB.PIX0124ultraflix-acesso@jim.com0224PLANO MENSAL - ULTRAFLIX520400005303986540529.905802BR5924JOAO PAES DE CASTRO NETO6008TERESINA62290525QRCCPsNsuXdq72keJfD5r8DFK6304FFCB"
+    ]
   },
   {
     id: "semestral",
     title: "PLANO SEMESTRAL",
-    price: 55.00,
+    price: 69.90,
     durationText: " / 6 meses",
     savingsText: "Mais vendido • Economize mais",
     badge: "MAIS VENDIDO",
     recommended: true,
     anchorPrice: 179.40,
-    perMonthLabel: "R$ 9,17/mês",
-    savingsPercent: 69,
-    perDayLabel: "R$ 0,31 por dia",
+    perMonthLabel: "R$ 11,65/mês",
+    savingsPercent: 61,
+    perDayLabel: "R$ 0,39 por dia",
     ctaText: "Quero o Mais Vendido",
     features: [
+      "Teste grátis de 30 minutos antes de pagar",
       "Tudo liberado: filmes, séries, novelas e Copa 2026",
       "4 telas simultâneas — família toda assiste junto",
       "Qualidade Ultra HD 4K",
       "Suporte VIP via WhatsApp",
       "6 meses sem preocupação com mensalidade"
-    ],
-    pixCode: "00020101021226720014BR.GOV.BCB.PIX0124ultraflix-acesso@jim.com0222Pagamento ultraflix-ac520400005303986540555.005802BR5924JOAO PAES DE CASTRO NETO6008TERESINA62290525QRCCrYcAMi1frKJXgcPVODJcU6304519D"
+    ]
   },
   {
     id: "anual",
     title: "PLANO ANUAL",
-    price: 115.00,
+    price: 129.90,
     durationText: " / ano",
     savingsText: "Maior economia de todas",
     badge: "MELHOR OFERTA",
     anchorPrice: 358.80,
-    perMonthLabel: "R$ 9,58/mês",
-    savingsPercent: 68,
-    perDayLabel: "R$ 0,32 por dia",
+    perMonthLabel: "R$ 10,83/mês",
+    savingsPercent: 64,
+    perDayLabel: "R$ 0,36 por dia",
     ctaText: "Quero a Maior Economia",
     features: [
+      "Teste grátis de 30 minutos antes de pagar",
       "Tudo liberado: filmes, séries, novelas e Copa 2026",
       "5 telas simultâneas — a casa inteira conectada",
       "Qualidade Ultra HD 4K",
       "Suporte Ultra VIP 24h",
       "1 ano inteiro pagando uma única vez"
-    ],
-    pixCode: "00020101021226720014BR.GOV.BCB.PIX0124ultraflix-acesso@jim.com0222Pagamento ultraflix-ac5204000053039865406115.005802BR5924JOAO PAES DE CASTRO NETO6008TERESINA62290525QRCCMrRp969CfdmAyxb3vkAWo6304EA7A"
+    ]
   }
 ];
 
@@ -121,18 +121,18 @@ export const DEVICES = [
 export const HOW_IT_WORKS = [
   {
     step: "01",
-    title: "Escolha seu plano",
-    description: "Selecione a melhor assinatura para sua rotina, com as telas simultâneas ideais para você ou sua família."
+    title: "Chame no WhatsApp",
+    description: "Clique em qualquer botão da página e fale direto com nossa equipe. Atendimento em segundos, sem cadastro e sem formulário."
   },
   {
     step: "02",
-    title: "Faça seu cadastro",
-    description: "Preencha seus dados de contato de forma ultra-rápida e segura na nossa plataforma de checkout, usando apenas nome e WhatsApp."
+    title: "Teste grátis por 30 minutos",
+    description: "Você recebe um acesso de teste na hora. Instale na sua TV ou celular, dê o play e comprove a qualidade antes de pagar qualquer coisa."
   },
   {
     step: "03",
-    title: "Comece sua experiência",
-    description: "Pronto! O acesso é enviado na mesma hora pelo WhatsApp. É só logar e aproveitar o catálogo completo."
+    title: "Gostou? Ativa na hora",
+    description: "Escolha seu plano e pague pelo Pix direto no WhatsApp. Seu acesso completo é liberado em minutos, com tutorial de instalação incluso."
   }
 ];
 
@@ -192,42 +192,42 @@ export const TESTIMONIALS: Testimonial[] = [
 export const FAQS: FAQItem[] = [
   {
     id: "faq1",
-    question: "Funciona na minha televisão?",
-    answer: "Sim! A Ultraflix é compatível com todas as Smart TVs (Samsung, LG, TCL, AOC, etc.), além de aparelhos como Chromecast, Fire TV Stick, Mi Box e qualquer TV Box rodando Android."
+    question: "Como funciona o teste grátis de 30 minutos?",
+    answer: "Simples: você chama no WhatsApp, nossa equipe libera um acesso de teste na hora e você assiste por 30 minutos na sua TV ou celular. Sem pagar nada, sem cartão e sem compromisso. Gostou? Aí sim você escolhe um plano."
   },
   {
     id: "faq2",
-    question: "Como recebo meu acesso?",
-    answer: "A ativação é 100% instantânea. Assim que o pagamento do plano for confirmado, os dados de login e instruções detalhadas são disparados automaticamente para o seu WhatsApp cadastrado."
+    question: "Preciso pagar alguma coisa para testar?",
+    answer: "Não! O teste é 100% gratuito. Você só paga se gostar e decidir ativar um plano — e o pagamento é feito por Pix direto no WhatsApp, com acesso liberado em minutos."
   },
   {
     id: "faq3",
+    question: "Funciona na minha televisão?",
+    answer: "Sim! A Ultraflix é compatível com todas as Smart TVs (Samsung, LG, TCL, AOC, etc.), além de aparelhos como Chromecast, Fire TV Stick, Mi Box e qualquer TV Box rodando Android. No teste grátis você já confere na sua própria TV."
+  },
+  {
+    id: "faq4",
     question: "Posso usar no celular?",
     answer: "Com certeza! Oferecemos suporte completo para celulares e tablets Android e iOS. Você pode assistir em trânsito com total conforto e economia de dados móveis."
   },
   {
-    id: "faq4",
+    id: "faq5",
+    question: "Como recebo meu acesso depois de assinar?",
+    answer: "Tudo pelo WhatsApp: você paga pelo Pix, nossa equipe confirma na hora e envia seu login, senha e um tutorial passo a passo de instalação. Em média, menos de 5 minutos entre o pagamento e o primeiro play."
+  },
+  {
+    id: "faq6",
     question: "Tenho suporte caso precise de ajuda?",
     answer: "Sim, esse é o nosso maior diferencial! Temos uma equipe de suporte humanizado via WhatsApp disponível diariamente para auxiliar você em qualquer configuração ou dúvida."
   },
   {
-    id: "faq5",
-    question: "O pagamento via Pix é seguro?",
-    answer: "Totalmente. O Pix é o meio de pagamento oficial do Banco Central do Brasil. Você paga direto pelo app do seu banco, sem informar cartão ou dados sensíveis no site, e a confirmação é imediata."
-  },
-  {
-    id: "faq6",
-    question: "Quanto tempo demora para ativar meu acesso?",
-    answer: "Em média 5 minutos. Assim que você realiza o Pix e envia o comprovante pelo WhatsApp, nossa equipe libera seu login na hora e te acompanha na instalação, passo a passo."
-  },
-  {
     id: "faq7",
     question: "E se eu não gostar? Tem garantia?",
-    answer: "Sim! Você tem 7 dias de garantia. Se não ficar satisfeito por qualquer motivo, devolvemos 100% do valor pago, sem burocracia."
+    answer: "Você tem duas proteções: o teste grátis de 30 minutos antes de pagar e, depois de assinar, 7 dias de garantia. Se não ficar satisfeito por qualquer motivo, devolvemos 100% do valor pago, sem burocracia."
   },
   {
     id: "faq8",
     question: "Quais formas de pagamento vocês aceitam?",
-    answer: "Trabalhamos com Pix, o meio de pagamento oficial do Banco Central: aprovação na hora, sem precisar cadastrar cartão de crédito e sem mensalidade recorrente escondida. Você paga uma vez e usa pelo período contratado."
+    answer: "Trabalhamos com Pix, o meio de pagamento oficial do Banco Central: aprovação na hora, sem precisar cadastrar cartão de crédito e sem mensalidade recorrente escondida. Você paga uma vez, direto no WhatsApp, e usa pelo período contratado."
   }
 ];

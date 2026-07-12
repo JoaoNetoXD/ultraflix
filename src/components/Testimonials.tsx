@@ -2,14 +2,12 @@ import React from "react";
 import { Star, ShieldCheck, MessageCircle } from "lucide-react";
 import { motion } from "motion/react";
 import { TESTIMONIALS } from "../data";
+import { TRIAL_WHATSAPP_LINK } from "../config";
+import { trackWhatsAppClick } from "../tracking";
 
 const TIMES = ["21:34", "19:08", "20:47", "14:22", "22:15"];
 
-interface TestimonialsProps {
-  onScrollToPlans?: () => void;
-}
-
-export default function Testimonials({ onScrollToPlans }: TestimonialsProps) {
+export default function Testimonials() {
   return (
     <section className="py-20 px-4 bg-[#0a0a0a]">
       <div className="max-w-3xl mx-auto">
@@ -143,15 +141,17 @@ export default function Testimonials({ onScrollToPlans }: TestimonialsProps) {
           <p className="font-display font-bold text-sm sm:text-base text-white mb-4">
             Amanhã pode ser você mandando esse depoimento. 📺
           </p>
-          {onScrollToPlans && (
-            <button
-              onClick={onScrollToPlans}
-              id="btn_testimonials_cta"
-              className="inline-flex items-center justify-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 active:scale-95 text-white font-display font-black text-xs sm:text-sm px-7 py-3.5 rounded-full shadow-lg shadow-red-600/30 transition-all duration-200 uppercase tracking-widest cursor-pointer"
-            >
-              Quero Assinar Também
-            </button>
-          )}
+          <a
+            href={TRIAL_WHATSAPP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackWhatsAppClick("depoimentos")}
+            id="btn_testimonials_cta"
+            className="inline-flex items-center justify-center bg-[#25D366] hover:bg-[#20ba5a] active:scale-95 text-white font-display font-black text-xs sm:text-sm px-7 py-3.5 rounded-full shadow-lg shadow-green-600/30 transition-all duration-200 uppercase tracking-widest cursor-pointer space-x-2"
+          >
+            <MessageCircle className="w-4 h-4 fill-white/10" />
+            <span>Quero Testar Grátis Também</span>
+          </a>
         </div>
 
       </div>

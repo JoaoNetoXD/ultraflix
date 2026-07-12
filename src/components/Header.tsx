@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Play } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { TRIAL_WHATSAPP_LINK } from "../config";
+import { trackWhatsAppClick } from "../tracking";
 
 interface HeaderProps {
   onScrollToPlans: () => void;
 }
 
 const OFFER_MESSAGES = [
-  "🔥 OFERTA DE LANÇAMENTO: até 69% OFF nos planos",
+  "🎁 TESTE GRÁTIS DE 30 MINUTOS — peça agora no WhatsApp",
+  "🔥 OFERTA DE LANÇAMENTO: até 64% OFF nos planos",
   "⚽ COPA DO MUNDO 2026 AO VIVO em 4K",
-  "⚡ Pix aprovado = acesso liberado em 5 minutos",
-  "🛡️ Garantia de 7 dias ou seu dinheiro de volta",
+  "⚡ Atendimento no WhatsApp = acesso em 5 minutos",
 ];
 
 export default function Header({ onScrollToPlans }: HeaderProps) {
@@ -62,13 +64,16 @@ export default function Header({ onScrollToPlans }: HeaderProps) {
           </div>
 
           {/* Action button */}
-          <button
-            onClick={onScrollToPlans}
-            id="btn_header_assinar"
-            className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-display font-bold text-xs sm:text-sm px-4 py-2 sm:px-5 sm:py-2.5 rounded-full shadow-md shadow-red-600/30 hover:shadow-red-600/50 transition-all duration-200 uppercase tracking-wider"
+          <a
+            href={TRIAL_WHATSAPP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackWhatsAppClick("header")}
+            id="btn_header_teste_gratis"
+            className="bg-[#25D366] hover:bg-[#20ba5a] active:scale-95 text-white font-display font-bold text-xs sm:text-sm px-4 py-2 sm:px-5 sm:py-2.5 rounded-full shadow-md shadow-green-600/30 hover:shadow-green-600/50 transition-all duration-200 uppercase tracking-wider"
           >
-            Assinar Agora
-          </button>
+            Teste Grátis
+          </a>
         </div>
       </div>
     </header>

@@ -1,61 +1,257 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronRight, ShieldCheck, Zap, Star, Flame, Trophy, Clapperboard, Popcorn } from "lucide-react";
+import { ChevronRight, ShieldCheck, Zap, Star, MessageCircle, Gift, Play, CheckCheck, Clapperboard, Popcorn, Heart, Trophy } from "lucide-react";
+import { TRIAL_WHATSAPP_LINK } from "../config";
+import { trackWhatsAppClick } from "../tracking";
 
 interface HeroProps {
   onScrollToPlans: () => void;
 }
 
-const SPOTLIGHTS = [
-  {
-    title: "LANÇAMENTOS DE CINEMA",
-    badge: "Cinema em Casa",
-    icon: Clapperboard,
-    desc: "Os maiores blockbusters de Hollywood recém-saídos das salas de cinema, direto na sua tela, dublados e legendados.",
-    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80",
-    rating: "9.8",
-    tags: ["Filmes", "4K Ultra HD", "Dublado"]
-  },
-  {
-    title: "SÉRIES COMPLETAS",
-    badge: "Maratona Garantida",
-    icon: Popcorn,
-    desc: "Temporadas inteiras dubladas e legendadas para você e toda a família maratonarem sem propaganda e sem interrupção.",
-    image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80",
-    rating: "9.6",
-    tags: ["Séries", "Temporadas Completas", "Sem Anúncios"]
-  },
-  {
-    title: "COPA DO MUNDO 2026 AO VIVO",
-    badge: "Acontecendo Agora",
-    icon: Trophy,
-    desc: "O maior torneio do planeta está rolando. Assista a todos os jogos ao vivo, em 4K, sem travar e com narração brasileira.",
-    image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1200&q=80",
-    rating: "10",
-    tags: ["Ao Vivo", "4K 60 FPS", "Narração BR"]
-  },
-  {
-    title: "NOVELAS E REALITIES",
-    badge: "Capítulo do Dia",
-    icon: Flame,
-    desc: "Sua novela e seus programas favoritos no horário que você quiser, sem depender da grade da TV — com capítulos completos.",
-    image: "https://images.unsplash.com/photo-1603190287605-e6ade32fa852?auto=format&fit=crop&w=1200&q=80",
-    rating: "9.7",
-    tags: ["Novelas", "Realities", "Quando Quiser"]
-  }
-];
+// Categorias que giram no badge do topo — ícone + label + destaque opcional
+const CATEGORIES = [
+  { icon: Clapperboard, label: "Filmes de Cinema", live: false },
+  { icon: Popcorn, label: "Séries Completas", live: false },
+  { icon: Heart, label: "Novelas do Dia", live: false },
+  { icon: Trophy, label: "Copa 2026 ao Vivo", live: true },
+] as const;
 
-export default function Hero({ onScrollToPlans }: HeroProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
+function LiveCategoryBadge() {
+  const [idx, setIdx] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % SPOTLIGHTS.length);
-    }, 6000);
+      setIdx((prev) => (prev + 1) % CATEGORIES.length);
+    }, 2200);
     return () => clearInterval(timer);
   }, []);
 
-  const current = SPOTLIGHTS[activeIndex];
+  const current = CATEGORIES[idx];
+  const Icon = current.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -15 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="group relative inline-flex items-center gap-2.5 mb-6 rounded-full p-[1.5px] overflow-hidden shadow-lg shadow-red-950/40"
+    >
+      {/* Borda animada girando (conic gradient) */}
+      <motion.span
+        aria-hidden
+        animate={{ rotate: 360 }}
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-[-50%] pointer-events-none"
+        style={{
+          background:
+            "conic-gradient(from 0deg, transparent 0deg, transparent 200deg, rgba(239,68,68,0.9) 300deg, rgba(249,115,22,0.9) 340deg, transparent 360deg)",
+        }}
+      />
+
+      {/* Conteúdo do pill */}
+      <div className="relative flex items-center gap-2.5 rounded-full bg-[#0c0505]/95 backdrop-blur-md px-4 py-2">
+        {/* Pulse LIVE dot */}
+        <span className="relative flex h-2.5 w-2.5 shrink-0">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+        </span>
+
+        {/* Rótulo estático curto */}
+        <span className="font-mono text-[10px] sm:text-xs font-bold tracking-widest text-gray-400 uppercase hidden sm:inline">
+          Tudo incluso:
+        </span>
+
+        {/* Categoria rotativa */}
+        <span className="relative flex items-center h-4 min-w-[130px] sm:min-w-[150px]">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={idx}
+              initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+              transition={{ duration: 0.3 }}
+              className="absolute left-0 flex items-center gap-1.5 font-display text-[11px] sm:text-sm font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 whitespace-nowrap"
+            >
+              <Icon className="w-3.5 h-3.5 text-red-400 shrink-0" strokeWidth={2.5} />
+              {current.label}
+              {current.live && (
+                <span className="ml-0.5 font-mono text-[8px] font-extrabold text-white bg-red-600 px-1.5 py-0.5 rounded tracking-wider not-italic">
+                  AO VIVO
+                </span>
+              )}
+            </motion.span>
+          </AnimatePresence>
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
+const BACKDROPS = [
+  "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80",
+];
+
+// Conversa simulada: mostra o teste grátis sendo liberado em tempo real.
+const CHAT_SCRIPT = [
+  { from: "user", text: "Oi! Vi o anúncio. Esse teste grátis de 30 min é real? 👀", time: "20:41" },
+  { from: "ultraflix", text: "Real sim! 🎬 Acabei de liberar seu acesso de teste. Instala em 1 minuto na TV ou no celular 📺", time: "20:41" },
+  { from: "user", text: "Instalei aqui… qualidade ABSURDA. Jogo ao vivo sem travar 🔥🔥", time: "20:44" },
+  { from: "ultraflix", text: "É assim todo dia 😎 E o plano sai a partir de R$ 10,83/mês. Bora ativar o seu?", time: "20:45" },
+] as const;
+
+function WhatsAppSimulation() {
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    if (visibleCount >= CHAT_SCRIPT.length) return;
+    const next = CHAT_SCRIPT[visibleCount];
+    const isIncoming = next.from === "ultraflix";
+
+    // Mensagens da equipe mostram "digitando..." antes de aparecer
+    const typingDelay = isIncoming ? 900 : 0;
+    const showDelay = visibleCount === 0 ? 700 : 1500;
+
+    const typingTimer = setTimeout(() => {
+      if (isIncoming) setTyping(true);
+    }, showDelay - typingDelay > 0 ? showDelay - typingDelay : 100);
+
+    const showTimer = setTimeout(() => {
+      setTyping(false);
+      setVisibleCount((c) => c + 1);
+    }, showDelay + typingDelay);
+
+    return () => {
+      clearTimeout(typingTimer);
+      clearTimeout(showTimer);
+    };
+  }, [visibleCount]);
+
+  const finished = visibleCount >= CHAT_SCRIPT.length;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
+      className="w-full max-w-md bg-[#0b141a] border border-gray-900/80 rounded-3xl overflow-hidden shadow-2xl shadow-green-600/10"
+    >
+      {/* WhatsApp-style header */}
+      <div className="bg-[#1f2c34] px-4 py-3 flex items-center gap-3">
+        <div className="relative">
+          <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center shadow-md">
+            <Play className="w-5 h-5 fill-white text-white" />
+          </div>
+          <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#25D366] border-2 border-[#1f2c34] rounded-full" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-display font-bold text-sm text-white truncate">ULTRAFLIX Oficial</p>
+          <p className="font-sans text-[11px] text-[#25D366]">online agora</p>
+        </div>
+        <span className="font-mono text-[9px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-900/40 px-2 py-1 rounded-full uppercase tracking-wider">
+          Atendimento real
+        </span>
+      </div>
+
+      {/* Chat area */}
+      <div
+        className="px-3.5 py-4 space-y-2.5 min-h-[280px] sm:min-h-[300px] flex flex-col justify-end"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 20% 30%, rgba(37,211,102,0.03) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(220,38,38,0.03) 0%, transparent 50%)",
+        }}
+      >
+        <AnimatePresence initial={false}>
+          {CHAT_SCRIPT.slice(0, visibleCount).map((msg, idx) => {
+            const isUser = msg.from === "user";
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.25 }}
+                className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-md ${
+                    isUser
+                      ? "bg-[#005c4b] rounded-br-md"
+                      : "bg-[#202c33] rounded-bl-md"
+                  }`}
+                >
+                  <p className="font-sans text-[12.5px] text-gray-100 leading-snug">{msg.text}</p>
+                  <div className="flex items-center justify-end gap-1 mt-1">
+                    <span className="font-sans text-[9px] text-gray-400">{msg.time}</span>
+                    {isUser && <CheckCheck className="w-3.5 h-3.5 text-[#53bdeb]" />}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+        {/* Typing indicator */}
+        <AnimatePresence>
+          {typing && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex justify-start"
+            >
+              <div className="bg-[#202c33] rounded-2xl rounded-bl-md px-4 py-3 shadow-md flex items-center gap-1">
+                {[0, 1, 2].map((i) => (
+                  <motion.span
+                    key={i}
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                    className="w-1.5 h-1.5 bg-gray-400 rounded-full"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* CTA footer: aparece quando a conversa termina, mas sempre clicável */}
+      <div className="bg-[#0f1b21] border-t border-gray-900 p-4 space-y-2.5">
+        <motion.a
+          href={TRIAL_WHATSAPP_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackWhatsAppClick("hero_chat_simulacao")}
+          id="btn_hero_chat_cta"
+          animate={finished ? { scale: [1, 1.03, 1] } : {}}
+          transition={{ duration: 1.4, repeat: Infinity }}
+          className="w-full bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.98] text-white font-display font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-green-600/25"
+        >
+          <MessageCircle className="w-4.5 h-4.5 fill-white/10" />
+          <span>Quero Esse Teste Grátis</span>
+          <ChevronRight className="w-4 h-4" />
+        </motion.a>
+        <p className="text-center font-sans text-[10px] text-gray-500 flex items-center justify-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          Resposta em segundos • 30 min grátis • Sem cartão
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function Hero({ onScrollToPlans }: HeroProps) {
+  const [bgIndex, setBgIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % BACKDROPS.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <section className="relative min-h-screen pt-28 pb-16 flex flex-col items-center justify-center overflow-hidden bg-[#050505]">
@@ -64,7 +260,7 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
       <div className="absolute inset-0 z-0">
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeIndex}
+            key={bgIndex}
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 0.5, scale: 1 }}
             exit={{ opacity: 0 }}
@@ -72,8 +268,8 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
             className="absolute inset-0"
           >
             <img
-              src={current.image}
-              alt={current.title}
+              src={BACKDROPS[bgIndex]}
+              alt="Catálogo ULTRAFLIX"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover object-center filter brightness-[0.7] saturate-110"
             />
@@ -99,20 +295,8 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
         {/* LEFT COLUMN: HERO OFFERS & DIRECT VALUE PROPOSITION */}
         <div className="w-full lg:w-[55%] text-center lg:text-left flex flex-col items-center lg:items-start">
 
-          {/* Animated Copa Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center space-x-2 bg-red-950/45 border border-red-500/30 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md"
-          >
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
-            </span>
-            <span className="font-mono text-[10px] sm:text-xs font-semibold tracking-widest text-red-400 uppercase">
-              FILMES • SÉRIES • NOVELAS • COPA 2026 AO VIVO
-            </span>
-          </motion.div>
+          {/* Animated rotating category badge */}
+          <LiveCategoryBadge />
 
           {/* Big Cinematic Title */}
           <motion.h1
@@ -121,8 +305,8 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
             transition={{ delay: 0.1 }}
             className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[1.06] mb-6 max-w-3xl"
           >
-            TODO FILME. TODA SÉRIE. TODO JOGO.{" "}
-            <span className="text-gradient-fire block">POR CENTAVOS POR DIA.</span>
+            TESTE AGORA <span className="text-emerald-400">DE GRAÇA</span>.{" "}
+            <span className="text-gradient-fire block">SÓ PAGUE SE FICAR VICIADO.</span>
           </motion.h1>
 
           {/* Core Subtitle */}
@@ -134,7 +318,7 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
           >
             Lançamentos de cinema, séries completas, Brasileirão, Champions e a{" "}
             <strong className="text-white">Copa do Mundo 2026 ao vivo em 4K</strong>.
-            Você paga uma vez, assiste tudo — e ativa em 5 minutos pelo Pix.
+            Peça no WhatsApp e <strong className="text-emerald-400">assista 30 minutos grátis</strong> antes de pagar qualquer coisa.
           </motion.p>
 
           {/* Price anchor */}
@@ -144,31 +328,48 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
             transition={{ delay: 0.25 }}
             className="font-display font-bold text-sm sm:text-base text-white mb-6"
           >
-            A partir de <span className="text-emerald-400 font-black text-lg sm:text-xl">R$ 9,17/mês</span>
-            <span className="font-sans font-normal text-gray-400 text-xs sm:text-sm"> — menos de R$ 0,31 por dia</span>
+            A partir de <span className="text-emerald-400 font-black text-lg sm:text-xl">R$ 10,83/mês</span>
+            <span className="font-sans font-normal text-gray-400 text-xs sm:text-sm"> — menos de R$ 0,36 por dia</span>
           </motion.p>
 
-          {/* Big Red Magnetic Button */}
-          <motion.button
-            onClick={onScrollToPlans}
+          {/* Big Green WhatsApp Magnetic Button */}
+          <motion.a
+            href={TRIAL_WHATSAPP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackWhatsAppClick("hero")}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            id="btn_hero_assinar"
-            className="group relative inline-flex items-center justify-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-display font-black text-sm sm:text-base px-8 py-4.5 sm:px-11 sm:py-5 rounded-full animate-pulse-glow transition-all duration-300 uppercase tracking-widest cursor-pointer overflow-hidden mb-3"
+            id="btn_hero_teste_gratis"
+            className="group relative inline-flex items-center justify-center bg-gradient-to-r from-[#25D366] to-[#1da851] hover:from-[#2ee374] hover:to-[#25D366] text-white font-display font-black text-sm sm:text-base px-8 py-4.5 sm:px-11 sm:py-5 rounded-full animate-pulse-glow transition-all duration-300 uppercase tracking-widest cursor-pointer overflow-hidden mb-3 shadow-lg shadow-green-600/30"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.8s_infinite]" />
             <span className="relative flex items-center space-x-2.5">
-              <span>QUERO ASSISTIR TUDO AGORA</span>
+              <MessageCircle className="w-5 h-5 fill-white/10" />
+              <span>QUERO MEU TESTE GRÁTIS</span>
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
-          </motion.button>
+          </motion.a>
 
-          <p className="font-sans text-[11px] text-gray-500 mb-8">
-            Sem cartão de crédito • Sem fidelidade • Cancele quando quiser
+          <p className="font-sans text-[11px] text-gray-500 mb-3">
+            30 minutos grátis no WhatsApp • Sem cartão • Sem cadastro • Sem compromisso
           </p>
+
+          {/* Secondary: see plans first */}
+          <button
+            onClick={onScrollToPlans}
+            id="btn_hero_ver_planos"
+            className="font-display font-bold text-xs text-gray-400 hover:text-white underline underline-offset-4 decoration-red-600/50 uppercase tracking-widest transition-colors cursor-pointer mb-8"
+          >
+            Ver planos e preços ↓
+          </button>
 
           {/* Live Platform Security badges */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 text-gray-400 font-sans text-xs sm:text-sm">
+            <div className="flex items-center space-x-1.5 bg-gray-950/40 px-3 py-1.5 rounded-lg border border-gray-900/40">
+              <Gift className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
+              <span>Teste grátis de 30 min</span>
+            </div>
             <div className="flex items-center space-x-1.5 bg-gray-950/40 px-3 py-1.5 rounded-lg border border-gray-900/40">
               <Zap className="w-4 h-4 text-red-500 fill-red-500/20" />
               <span>Ativação em 5 min</span>
@@ -185,108 +386,9 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
 
         </div>
 
-        {/* RIGHT COLUMN: INTERACTIVE STREAMING CATALOG HIGHLIGHTS */}
+        {/* RIGHT COLUMN: LIVE WHATSAPP TRIAL SIMULATION */}
         <div className="w-full lg:w-[45%] flex flex-col items-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
-            className="w-full bg-[#0d0d0d] border border-gray-900/80 rounded-3xl overflow-hidden shadow-2xl shadow-red-600/5 backdrop-blur-md flex flex-col justify-between"
-          >
-            {/* Spotlight Banner header */}
-            <div className="relative h-44 sm:h-52 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={activeIndex}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  src={current.image}
-                  alt={current.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
-              </AnimatePresence>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-transparent to-black/35" />
-
-              {/* Dynamic Tag */}
-              <div className="absolute top-4 left-4 bg-red-600 px-3 py-1 rounded-full text-[10px] font-display font-black tracking-widest text-white uppercase shadow-md shadow-red-600/30">
-                ★ {current.badge}
-              </div>
-
-              {/* Streaming Live Badge with pulse effect */}
-              <div className="absolute top-4 right-4 flex items-center space-x-1.5 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-lg">
-                <span className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
-                <span className="font-mono text-[9px] font-extrabold text-white uppercase tracking-wider">LIVE</span>
-              </div>
-            </div>
-
-            {/* Content info area */}
-            <div className="p-6 space-y-4">
-
-              {/* Tabs list to toggle */}
-              <div className="flex space-x-2 overflow-x-auto pb-1 scrollbar-none">
-                {SPOTLIGHTS.map((s, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveIndex(idx)}
-                    className={`px-3 py-1.5 rounded-lg font-display font-bold text-[10px] tracking-wider uppercase shrink-0 transition-all duration-200 cursor-pointer flex items-center gap-1 ${
-                      idx === activeIndex
-                        ? "bg-red-950/60 border border-red-600/50 text-white shadow-md shadow-red-600/10"
-                        : "bg-[#121212] border border-transparent text-gray-500 hover:text-gray-300"
-                    }`}
-                  >
-                    <s.icon className="w-3 h-3" />
-                    {s.title.split(" ")[0]}
-                  </button>
-                ))}
-              </div>
-
-              {/* Spotlight Title */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded font-bold border border-amber-500/20">
-                    ★ {current.rating}
-                  </span>
-                  <span className="text-xs text-gray-500 font-sans">• 4K HDR Atmos</span>
-                </div>
-                <h3 className="font-display font-black text-lg sm:text-xl text-white tracking-tight uppercase">
-                  {current.title}
-                </h3>
-              </div>
-
-              {/* Spotlight description */}
-              <p className="font-sans text-xs text-gray-400 leading-relaxed min-h-[50px]">
-                {current.desc}
-              </p>
-
-              {/* Tag badges */}
-              <div className="flex flex-wrap gap-1.5 pt-2">
-                {current.tags.map((t, i) => (
-                  <span key={i} className="font-sans text-[9px] font-medium bg-[#141414] text-gray-400 px-2.5 py-1 rounded-md border border-gray-900/40">
-                    {t}
-                  </span>
-                ))}
-              </div>
-
-            </div>
-
-            {/* Dynamic catalog interactive footer */}
-            <div className="bg-[#080808] px-6 py-4.5 border-t border-gray-950 flex items-center justify-between text-xs">
-              <span className="font-sans text-gray-500 flex items-center space-x-1">
-                <Flame className="w-3.5 h-3.5 text-red-500 fill-red-500" />
-                <span>Popularidade Máxima</span>
-              </span>
-              <button
-                onClick={onScrollToPlans}
-                className="font-display font-extrabold text-red-500 hover:text-red-400 transition-colors flex items-center space-x-1 cursor-pointer"
-              >
-                <span>VER PLANOS</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </motion.div>
+          <WhatsAppSimulation />
         </div>
 
       </div>

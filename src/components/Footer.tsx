@@ -1,41 +1,42 @@
 import React from "react";
-import { Play, Shield } from "lucide-react";
-import { buildWhatsAppLink } from "../config";
+import { Play, Shield, MessageCircle } from "lucide-react";
+import { buildWhatsAppLink, TRIAL_WHATSAPP_LINK } from "../config";
+import { trackWhatsAppClick } from "../tracking";
 
-interface FooterProps {
-  onScrollToPlans: () => void;
-}
-
-export default function Footer({ onScrollToPlans }: FooterProps) {
+export default function Footer() {
   return (
     <footer className="bg-[#050505] border-t border-red-950/20">
-      
+
       {/* Final CTA Banner */}
       <div className="py-20 px-4 max-w-4xl mx-auto text-center border-b border-gray-950">
         <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight leading-tight mb-6">
-          PRONTO PARA TER UMA <span className="text-red-600 text-shadow-neon">NOVA EXPERIÊNCIA</span>?
+          TESTE GRÁTIS AGORA E <span className="text-red-600 text-shadow-neon">COMPROVE VOCÊ MESMO</span>
         </h2>
-        
+
         <p className="font-sans text-xs sm:text-base text-gray-400 mb-10 max-w-lg mx-auto">
-          Crie sua conta em segundos, escolha seu plano ideal e comece a assistir agora mesmo em qualquer dispositivo.
+          Chame no WhatsApp, receba seu acesso de teste em segundos e assista 30 minutos grátis na sua TV ou celular. Só depois você decide.
         </p>
 
-        <button
-          onClick={onScrollToPlans}
-          id="btn_footer_assinar_cta"
-          className="group relative inline-flex items-center justify-center bg-red-600 hover:bg-red-700 active:scale-95 text-white font-display font-black text-sm sm:text-base px-8 py-4 sm:px-10 sm:py-5 rounded-full shadow-lg shadow-red-600/30 hover:shadow-red-600/55 transition-all duration-200 uppercase tracking-widest cursor-pointer overflow-hidden"
+        <a
+          href={TRIAL_WHATSAPP_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackWhatsAppClick("footer")}
+          id="btn_footer_whatsapp_cta"
+          className="group relative inline-flex items-center justify-center bg-[#25D366] hover:bg-[#20ba5a] active:scale-95 text-white font-display font-black text-sm sm:text-base px-8 py-4 sm:px-10 sm:py-5 rounded-full shadow-lg shadow-green-600/30 hover:shadow-green-600/55 transition-all duration-200 uppercase tracking-widest cursor-pointer overflow-hidden"
         >
           {/* Shimmer line */}
           <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-          
+
           <span className="relative flex items-center space-x-2">
-            <span>ASSINAR ULTRAFLIX</span>
+            <MessageCircle className="w-5 h-5 fill-white/10" />
+            <span>PEDIR TESTE GRÁTIS NO WHATSAPP</span>
           </span>
-        </button>
+        </a>
 
         <div className="mt-8 flex items-center justify-center space-x-2 text-xs text-gray-500">
           <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
-          <span>Garantia de 7 dias ou seu dinheiro de volta</span>
+          <span>Teste grátis de 30 min + garantia de 7 dias após assinar</span>
         </div>
       </div>
 
@@ -60,6 +61,7 @@ export default function Footer({ onScrollToPlans }: FooterProps) {
               href={buildWhatsAppLink("Olá! Preciso de ajuda com a Ultraflix.")}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick("footer_suporte")}
               className="hover:text-red-500 cursor-pointer"
             >
               Suporte via WhatsApp

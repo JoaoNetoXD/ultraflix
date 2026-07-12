@@ -10,10 +10,8 @@ declare global {
 
 type PixelEvent =
   | "ViewContent"
-  | "InitiateCheckout"
-  | "AddPaymentInfo"
-  | "Lead"
-  | "Purchase";
+  | "Contact"
+  | "Lead";
 
 interface TrackOptions {
   /** Telefone do cliente (vai hasheado para a CAPI — melhora o match) */
@@ -86,4 +84,13 @@ export function trackCustomPixel(event: string, params?: Record<string, unknown>
     // segue para a CAPI mesmo assim
   }
   sendToCapi(event, eventId, params);
+}
+
+/**
+ * Clique em qualquer botão de WhatsApp — evento principal do funil.
+ * Otimize a campanha do Meta Ads para o evento "Contact".
+ * `source` identifica qual botão converteu (ex: "hero", "plano_semestral").
+ */
+export function trackWhatsAppClick(source: string, extraParams?: Record<string, unknown>) {
+  trackPixel("Contact", { content_name: source, ...extraParams });
 }
