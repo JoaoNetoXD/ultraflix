@@ -1,11 +1,12 @@
 import React from "react";
 import { motion } from "motion/react";
-import { Clapperboard, Popcorn, Heart, ChevronRight, Star, BadgeCheck } from "lucide-react";
+import { Trophy, Clapperboard, Popcorn, Baby, ChevronRight, Star, BadgeCheck } from "lucide-react";
 
-// Muro de catálogo: cartazes estilizados com fotos reais (sem marcas de terceiros)
+// Muro de catálogo: cartazes estilizados com fotos reais (sem marcas de terceiros).
+// Futebol misturado no meio dos gêneros — vitrine equilibrada para qualquer lead.
 const POSTERS_ROW_A = [
-  { genre: "Ação", image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.4" },
   { genre: "Cinema 4K", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.8" },
+  { genre: "Copa 2026", image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=400&h=560&q=70", rating: "10", live: true },
   { genre: "Romance", image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.1" },
   { genre: "Terror", image: "https://images.unsplash.com/photo-1585951237318-9ea5e175b891?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.3" },
   { genre: "Maratona", image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.6" },
@@ -15,49 +16,59 @@ const POSTERS_ROW_A = [
 const POSTERS_ROW_B = [
   { genre: "Novelas", image: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.7" },
   { genre: "Animes", image: "https://images.unsplash.com/photo-1574267432553-4b4628081c31?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.5" },
+  { genre: "Futebol ao Vivo", image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=400&h=560&q=70", rating: "10", live: true },
   { genre: "Infantil", image: "https://images.unsplash.com/photo-1567593810070-7a3d471af022?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.2" },
   { genre: "Doramas", image: "https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.4" },
   { genre: "Documentários", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.1" },
-  { genre: "Realities", image: "https://images.unsplash.com/photo-1603190287605-e6ade32fa852?auto=format&fit=crop&w=400&h=560&q=70", rating: "8.9" },
 ];
 
 const CATEGORY_CARDS = [
   {
     icon: Clapperboard,
-    tag: "EM CARTAZ AGORA",
+    tag: "EM CARTAZ",
     live: true,
-    title: "Lançamentos de cinema",
-    desc: "Os filmes que estão em cartaz, dublados e legendados em 4K — sem esperar meses pra chegar no streaming.",
+    title: "Cinema em casa",
+    desc: "Lançamentos dublados e legendados em 4K, sem esperar chegar no streaming.",
   },
   {
     icon: Popcorn,
-    tag: "MARATONA LIBERADA",
+    tag: "MARATONA",
     live: false,
-    title: "Séries completas",
-    desc: "Temporadas inteiras das séries do momento e dos clássicos. Aperte o play e só pare quando quiser.",
+    title: "Séries e novelas",
+    desc: "Temporadas completas e o capítulo do dia, na hora que você quiser.",
   },
   {
-    icon: Heart,
-    tag: "CAPÍTULO DO DIA",
+    icon: Trophy,
+    tag: "AO VIVO",
+    live: true,
+    title: "Copa 2026 e futebol",
+    desc: "Todos os jogos ao vivo com narração BR: Copa, Brasileirão, Champions.",
+  },
+  {
+    icon: Baby,
+    tag: "PRA FAMÍLIA",
     live: false,
-    title: "Novelas e realities",
-    desc: "Sua novela, seu reality e seus programas favoritos — no horário que você quiser, sem depender de TV.",
+    title: "Infantil e animes",
+    desc: "Desenhos, animações e animes para as crianças — e para você também.",
   },
 ];
 
-const GENRES = [
-  "Filmes 4K",
-  "Séries",
-  "Novelas",
-  "Animes",
-  "Doramas",
-  "Infantil",
-  "Documentários",
-  "Shows e Stand-up",
-  "Realities",
+const CHIPS = [
+  "🎬 Filmes 4K",
+  "📺 Séries",
+  "💛 Novelas",
+  "⚽ Copa do Mundo 2026",
+  "⚽ Brasileirão",
+  "⚽ Champions League",
+  "🎌 Animes e Doramas",
+  "🧸 Infantil",
+  "🥊 UFC e Boxe",
+  "🏀 NBA",
+  "🎤 Shows e Realities",
+  "🎞️ Documentários",
 ];
 
-function PosterCard({ genre, image, rating }: { genre: string; image: string; rating: string; key?: string }) {
+function PosterCard({ genre, image, rating, live }: { genre: string; image: string; rating: string; live?: boolean; key?: string }) {
   return (
     <div className="relative w-32 h-44 sm:w-40 sm:h-56 rounded-xl overflow-hidden shrink-0 border border-gray-900/60 group">
       <img
@@ -69,10 +80,17 @@ function PosterCard({ genre, image, rating }: { genre: string; image: string; ra
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-black/30" />
 
-      {/* 4K badge */}
-      <span className="absolute top-2 right-2 font-mono text-[8px] font-extrabold bg-black/70 text-white px-1.5 py-0.5 rounded border border-white/10">
-        4K
-      </span>
+      {/* Badge topo: AO VIVO (esportes) ou 4K */}
+      {live ? (
+        <span className="absolute top-2 right-2 inline-flex items-center gap-1 font-mono text-[8px] font-extrabold bg-red-600 text-white px-1.5 py-0.5 rounded">
+          <span className="w-1 h-1 bg-white rounded-full animate-pulse" />
+          AO VIVO
+        </span>
+      ) : (
+        <span className="absolute top-2 right-2 font-mono text-[8px] font-extrabold bg-black/70 text-white px-1.5 py-0.5 rounded border border-white/10">
+          4K
+        </span>
+      )}
 
       {/* Genre + rating */}
       <div className="absolute bottom-0 left-0 right-0 p-2.5">
@@ -88,11 +106,11 @@ function PosterCard({ genre, image, rating }: { genre: string; image: string; ra
   );
 }
 
-interface CinemaShowcaseProps {
+interface AllInOneShowcaseProps {
   onScrollToPlans: () => void;
 }
 
-export default function CinemaShowcase({ onScrollToPlans }: CinemaShowcaseProps) {
+export default function AllInOneShowcase({ onScrollToPlans }: AllInOneShowcaseProps) {
   return (
     <section className="relative py-20 overflow-hidden bg-[#070707] border-t border-red-950/10">
 
@@ -111,26 +129,23 @@ export default function CinemaShowcase({ onScrollToPlans }: CinemaShowcaseProps)
           </div>
 
           <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight uppercase leading-tight">
-            FILMES, SÉRIES E NOVELAS SEM FIM.
-            <span className="text-gradient-fire block">O MELHOR DOS STREAMINGS, NUM LUGAR SÓ.</span>
+            TUDO QUE VOCÊ AMA ASSISTIR.
+            <span className="text-gradient-fire block">NUM LUGAR SÓ, POR CENTAVOS POR DIA.</span>
           </h2>
           <p className="font-sans text-sm sm:text-base text-gray-300 mt-5 max-w-xl mx-auto">
-            Chega de pular de aplicativo em aplicativo. Aqui você encontra{" "}
-            <strong className="text-white">lançamentos de cinema, séries do momento, novelas, animes e infantil</strong>{" "}
-            — dublado, legendado e em 4K, sem anúncio no meio.
+            Filme pra sexta à noite, novela de todo dia, maratona de série no fim de semana e{" "}
+            <strong className="text-white">a Copa do Mundo 2026 ao vivo</strong> — sem pular de app em app e sem pagar várias assinaturas.
           </p>
         </div>
       </div>
 
-      {/* POSTER WALL — full-bleed infinite marquee (imersão de catálogo) */}
+      {/* POSTER WALL — full-bleed infinite marquee */}
       <div className="relative z-10 space-y-4 mb-12 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-        {/* Row A: slides left */}
         <div className="flex w-max gap-4 animate-marquee-left">
           {[...POSTERS_ROW_A, ...POSTERS_ROW_A].map((p, idx) => (
             <PosterCard key={`a-${idx}`} {...p} />
           ))}
         </div>
-        {/* Row B: slides right */}
         <div className="flex w-max gap-4 animate-marquee-right">
           {[...POSTERS_ROW_B, ...POSTERS_ROW_B].map((p, idx) => (
             <PosterCard key={`b-${idx}`} {...p} />
@@ -140,55 +155,55 @@ export default function CinemaShowcase({ onScrollToPlans }: CinemaShowcaseProps)
 
       <div className="relative z-10 max-w-6xl mx-auto px-4">
 
-        {/* Category cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12">
+        {/* 4 category cards — cobertura equilibrada de nichos */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {CATEGORY_CARDS.map((card, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 25 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: idx * 0.12 }}
-              className={`relative rounded-2xl p-6 border backdrop-blur-sm flex flex-col ${
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.35, delay: idx * 0.08 }}
+              className={`relative rounded-2xl p-5 border backdrop-blur-sm flex flex-col ${
                 card.live
-                  ? "bg-gradient-to-b from-red-950/50 to-[#0b0b0b]/90 border-red-600/50 shadow-xl shadow-red-600/15"
+                  ? "bg-gradient-to-b from-red-950/40 to-[#0b0b0b]/90 border-red-600/40"
                   : "bg-[#0c0c0c]/85 border-gray-900/70 hover:border-red-600/25 transition-colors"
               }`}
             >
-              <div className="flex items-center justify-between mb-5">
-                <span className={`inline-flex items-center gap-1.5 font-mono text-[10px] font-extrabold tracking-widest uppercase px-2.5 py-1 rounded-md ${
+              <div className="flex items-center justify-between mb-3">
+                <span className={`inline-flex items-center gap-1.5 font-mono text-[9px] font-extrabold tracking-widest uppercase px-2 py-0.5 rounded ${
                   card.live
                     ? "bg-red-600 text-white"
                     : "bg-[#161616] text-gray-400 border border-gray-900"
                 }`}>
-                  {card.live && <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />}
+                  {card.live && <span className="w-1 h-1 bg-white rounded-full animate-pulse" />}
                   {card.tag}
                 </span>
-                <card.icon className={`w-5 h-5 ${card.live ? "text-red-400" : "text-gray-600"}`} />
+                <card.icon className={`w-4.5 h-4.5 ${card.live ? "text-red-400" : "text-gray-600"}`} />
               </div>
 
-              <h3 className="font-display font-black text-lg text-white uppercase tracking-tight mb-2">
+              <h3 className="font-display font-black text-base text-white uppercase tracking-tight mb-1.5">
                 {card.title}
               </h3>
-              <p className="font-sans text-xs text-gray-400 leading-relaxed flex-1">
+              <p className="font-sans text-[11px] text-gray-400 leading-relaxed">
                 {card.desc}
               </p>
             </motion.div>
           ))}
         </div>
 
-        {/* Genre chips */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5 mb-12">
-          {GENRES.map((genre, idx) => (
+        {/* Chips: gêneros + campeonatos misturados */}
+        <div className="flex flex-wrap justify-center gap-2 mb-12">
+          {CHIPS.map((chip, idx) => (
             <motion.span
               key={idx}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.25, delay: idx * 0.05 }}
+              transition={{ duration: 0.25, delay: idx * 0.04 }}
               className="font-display font-bold text-[11px] sm:text-xs text-gray-300 bg-[#101010]/90 border border-gray-900 px-3.5 py-2 rounded-full uppercase tracking-wide hover:border-red-600/40 hover:text-white transition-colors"
             >
-              🎬 {genre}
+              {chip}
             </motion.span>
           ))}
         </div>
@@ -197,14 +212,14 @@ export default function CinemaShowcase({ onScrollToPlans }: CinemaShowcaseProps)
         <div className="text-center">
           <button
             onClick={onScrollToPlans}
-            id="btn_cinema_cta"
+            id="btn_showcase_cta"
             className="group inline-flex items-center justify-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 active:scale-95 text-white font-display font-black text-sm sm:text-base px-8 py-4 sm:px-10 rounded-full animate-pulse-glow transition-all duration-200 uppercase tracking-widest cursor-pointer"
           >
-            <span>Liberar catálogo completo</span>
+            <span>Quero Tudo Isso Agora</span>
             <ChevronRight className="w-5 h-5 ml-1.5 group-hover:translate-x-1 transition-transform" />
           </button>
           <p className="font-sans text-[11px] text-gray-500 mt-3">
-            Um plano só • Todos os gêneros • Garantia de 7 dias
+            Um plano só • Pix aprovado = acesso em 5 minutos • Garantia de 7 dias
           </p>
         </div>
 

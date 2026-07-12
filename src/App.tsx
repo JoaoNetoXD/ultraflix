@@ -10,8 +10,7 @@ import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import CheckoutModal from "./components/CheckoutModal";
 import ValueStack from "./components/ValueStack";
-import SportsShowcase from "./components/SportsShowcase";
-import CinemaShowcase from "./components/CinemaShowcase";
+import AllInOneShowcase from "./components/AllInOneShowcase";
 import { Plan } from "./types";
 import { PLANS } from "./data";
 import { buildWhatsAppLink } from "./config";
@@ -81,11 +80,8 @@ export default function App() {
       {/* 2. Hero Section (Primeira Dobra) */}
       <Hero onScrollToPlans={handleScrollToPlans} />
 
-      {/* 2.5 Futebol / Copa do Mundo (gancho de desejo antes da oferta) */}
-      <SportsShowcase onScrollToPlans={handleScrollToPlans} />
-
-      {/* 2.6 Cinema / Séries / Novelas (segundo gancho: entretenimento) */}
-      <CinemaShowcase onScrollToPlans={handleScrollToPlans} />
+      {/* 2.5 Vitrine única: filmes + séries + novelas + futebol equilibrados */}
+      <AllInOneShowcase onScrollToPlans={handleScrollToPlans} />
 
       {/* 3. Plans Section (Onde a conversão acontece) */}
       <Plans onSelectPlan={handleSelectPlan} />

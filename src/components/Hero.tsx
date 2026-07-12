@@ -8,15 +8,6 @@ interface HeroProps {
 
 const SPOTLIGHTS = [
   {
-    title: "COPA DO MUNDO 2026 AO VIVO",
-    badge: "Acontecendo Agora",
-    icon: Trophy,
-    desc: "O maior torneio do planeta está rolando. Assista a todos os jogos ao vivo, em 4K, sem travar e com narração brasileira.",
-    image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1200&q=80",
-    rating: "10",
-    tags: ["Ao Vivo", "4K 60 FPS", "Narração BR"]
-  },
-  {
     title: "LANÇAMENTOS DE CINEMA",
     badge: "Cinema em Casa",
     icon: Clapperboard,
@@ -26,15 +17,6 @@ const SPOTLIGHTS = [
     tags: ["Filmes", "4K Ultra HD", "Dublado"]
   },
   {
-    title: "FUTEBOL TODOS OS DIAS",
-    badge: "Sem Delay",
-    icon: Flame,
-    desc: "Brasileirão, Libertadores, Champions League, Premier League e as maiores lutas do ano — tudo ao vivo, com estabilidade absoluta.",
-    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
-    rating: "10",
-    tags: ["Esportes", "60 FPS", "Ao Vivo"]
-  },
-  {
     title: "SÉRIES COMPLETAS",
     badge: "Maratona Garantida",
     icon: Popcorn,
@@ -42,6 +24,24 @@ const SPOTLIGHTS = [
     image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80",
     rating: "9.6",
     tags: ["Séries", "Temporadas Completas", "Sem Anúncios"]
+  },
+  {
+    title: "COPA DO MUNDO 2026 AO VIVO",
+    badge: "Acontecendo Agora",
+    icon: Trophy,
+    desc: "O maior torneio do planeta está rolando. Assista a todos os jogos ao vivo, em 4K, sem travar e com narração brasileira.",
+    image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1200&q=80",
+    rating: "10",
+    tags: ["Ao Vivo", "4K 60 FPS", "Narração BR"]
+  },
+  {
+    title: "NOVELAS E REALITIES",
+    badge: "Capítulo do Dia",
+    icon: Flame,
+    desc: "Sua novela e seus programas favoritos no horário que você quiser, sem depender da grade da TV — com capítulos completos.",
+    image: "https://images.unsplash.com/photo-1603190287605-e6ade32fa852?auto=format&fit=crop&w=1200&q=80",
+    rating: "9.7",
+    tags: ["Novelas", "Realities", "Quando Quiser"]
   }
 ];
 
@@ -110,7 +110,7 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
             </span>
             <span className="font-mono text-[10px] sm:text-xs font-semibold tracking-widest text-red-400 uppercase">
-              COPA DO MUNDO 2026 AO VIVO AGORA
+              FILMES • SÉRIES • NOVELAS • COPA 2026 AO VIVO
             </span>
           </motion.div>
 
