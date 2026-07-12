@@ -100,12 +100,12 @@ export default function CheckoutModal({ plan, onClose }: CheckoutModalProps) {
       setFormErrors("Digite um WhatsApp válido com DDD. Ex: (11) 99999-9999");
       return;
     }
-    trackPixel("Lead", { content_name: plan.title });
+    trackPixel("Lead", { content_name: plan.title }, { phone: form.phone });
     trackPixel("AddPaymentInfo", {
       content_name: plan.title,
       value: plan.price,
       currency: "BRL",
-    });
+    }, { phone: form.phone });
     setStep(2);
   };
 
@@ -114,7 +114,7 @@ export default function CheckoutModal({ plan, onClose }: CheckoutModalProps) {
       content_name: plan.title,
       value: plan.price,
       currency: "BRL",
-    });
+    }, { phone: form.phone });
     setStep(3);
   };
 
