@@ -1,0 +1,6 @@
+{
+  "name": "ULTRAFLIX",
+  "description": "Plataforma premium de entretenimento digital. Filmes, séries, esportes e muito mais em um único lugar.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
