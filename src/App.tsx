@@ -98,28 +98,7 @@ export default function App() {
       {/* Prova social: atividade recente em rodízio */}
       <SocialProofToast />
 
-      {/* A. FLOATING WHATSAPP BUTTON (Target blank for safe redirection) */}
-      <a
-        href={TRIAL_WHATSAPP_LINK}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => trackWhatsAppClick("botao_flutuante")}
-        id="btn_whatsapp_flutuante"
-        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-50 bg-[#25D366] hover:bg-[#20ba5a] active:scale-95 text-white p-3.5 sm:p-4 rounded-full shadow-xl shadow-green-600/30 hover:shadow-green-600/50 hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center cursor-pointer group animate-pulse-glow-green"
-        title="Pedir teste grátis no WhatsApp"
-      >
-        <svg
-          className="w-6 h-6 sm:w-6.5 sm:h-6.5 fill-current"
-          viewBox="0 0 24 24"
-        >
-          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.967C16.638 2.02 14.162.992 11.53.991c-5.438 0-9.863 4.373-9.867 9.801-.002 1.73.465 3.424 1.353 4.96l-.982 3.58 3.68-.946zm11.226-7.397c-.302-.15-1.785-.873-2.057-.972-.272-.1-.469-.15-.668.15-.198.299-.767.97-.94 1.169-.173.199-.347.224-.648.075-.3-.15-1.265-.462-2.41-1.474-.89-.789-1.49-1.764-1.665-2.063-.173-.3-.018-.462.13-.61.135-.133.303-.349.453-.524.15-.174.2-.299.3-.498.1-.2.05-.374-.025-.524-.075-.15-.668-1.597-.916-2.193-.242-.582-.489-.504-.668-.513-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.299-1.04 1.013-1.04 2.47 0 1.458 1.06 2.868 1.208 3.068.149.199 2.086 3.16 5.05 4.42 2.47 1.05 3.33.84 3.91.78.582-.06 1.786-.723 2.034-1.42.247-.697.247-1.295.173-1.42-.075-.125-.272-.199-.57-.349z" />
-        </svg>
-        <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2.5 transition-all duration-300 font-display font-extrabold text-xs tracking-wider uppercase whitespace-nowrap hidden sm:inline">
-          Teste Grátis de 30 Min
-        </span>
-      </a>
-
-      {/* B. STICKY MOBILE BOTTOM WHATSAPP BAR (Slides up past the first fold) */}
+      {/* STICKY MOBILE BOTTOM WHATSAPP BAR (Slides up past the first fold) */}
       <div
         id="mobile_sticky_action_bar"
         className={`fixed bottom-0 left-0 right-0 z-40 bg-[#0d0d0d]/95 border-t border-green-600/30 p-3 flex sm:hidden items-center justify-between backdrop-blur-md transition-all duration-300 transform ${
