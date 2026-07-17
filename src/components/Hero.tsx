@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronRight, ShieldCheck, Zap, Star, MessageCircle, Gift, Play, CheckCheck, Clapperboard, Popcorn, Heart, Trophy } from "lucide-react";
-import { TRIAL_WHATSAPP_LINK } from "../config";
+import { TRIAL_WHATSAPP_LINK_A, TRIAL_WHATSAPP_LINK_B } from "../config";
 import { trackWhatsAppClick } from "../tracking";
 
 interface HeroProps {
@@ -218,7 +218,7 @@ function WhatsAppSimulation() {
       {/* CTA footer: aparece quando a conversa termina, mas sempre clicável */}
       <div className="bg-[#0f1b21] border-t border-gray-900 p-4 space-y-2.5">
         <motion.a
-          href={TRIAL_WHATSAPP_LINK}
+          href={TRIAL_WHATSAPP_LINK_B}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackWhatsAppClick("hero_chat_simulacao")}
@@ -334,7 +334,7 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
 
           {/* Big Green WhatsApp Magnetic Button */}
           <motion.a
-            href={TRIAL_WHATSAPP_LINK}
+            href={TRIAL_WHATSAPP_LINK_A}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackWhatsAppClick("hero")}

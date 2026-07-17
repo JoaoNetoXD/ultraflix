@@ -2,7 +2,7 @@ import React from "react";
 import { PlayCircle, MonitorSmartphone, Layout, MessageSquareText, Sliders, Check, Gift, MessageCircle, LucideIcon } from "lucide-react";
 import { motion } from "motion/react";
 import { BENEFITS } from "../data";
-import { TRIAL_WHATSAPP_LINK } from "../config";
+import { TRIAL_WHATSAPP_LINK_B } from "../config";
 import { trackWhatsAppClick } from "../tracking";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -64,7 +64,7 @@ export default function Benefits() {
 
           {/* 6º card: CTA de conversão — completa o grid e vende o teste */}
           <motion.a
-            href={TRIAL_WHATSAPP_LINK}
+            href={TRIAL_WHATSAPP_LINK_B}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackWhatsAppClick("beneficios_card")}

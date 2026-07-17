@@ -172,7 +172,7 @@ export default function AllInOneShowcase({ onScrollToPlans }: AllInOneShowcasePr
           {CATEGORY_CARDS.map((card, idx) => (
             <motion.a
               key={idx}
-              href={buildInterestWhatsAppLink(card.title)}
+              href={buildInterestWhatsAppLink(card.title, idx)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackWhatsAppClick(`categoria_${slug(card.title)}`)}
@@ -222,7 +222,7 @@ export default function AllInOneShowcase({ onScrollToPlans }: AllInOneShowcasePr
           {CHIPS.map((chip, idx) => (
             <motion.a
               key={idx}
-              href={buildInterestWhatsAppLink(chip)}
+              href={buildInterestWhatsAppLink(chip, idx)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackWhatsAppClick(`chip_${slug(chip)}`)}

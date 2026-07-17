@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Play } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { TRIAL_WHATSAPP_LINK } from "../config";
+import { TRIAL_WHATSAPP_LINK_A } from "../config";
 import { trackWhatsAppClick } from "../tracking";
 
 interface HeaderProps {
@@ -65,7 +65,7 @@ export default function Header({ onScrollToPlans }: HeaderProps) {
 
           {/* Action button */}
           <a
-            href={TRIAL_WHATSAPP_LINK}
+            href={TRIAL_WHATSAPP_LINK_A}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackWhatsAppClick("header")}

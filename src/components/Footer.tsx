@@ -1,6 +1,6 @@
 import React from "react";
 import { Play, Shield, MessageCircle } from "lucide-react";
-import { buildWhatsAppLink, TRIAL_WHATSAPP_LINK } from "../config";
+import { buildWhatsAppLink, TRIAL_WHATSAPP_LINK_A } from "../config";
 import { trackWhatsAppClick } from "../tracking";
 
 export default function Footer() {
@@ -18,7 +18,7 @@ export default function Footer() {
         </p>
 
         <a
-          href={TRIAL_WHATSAPP_LINK}
+          href={TRIAL_WHATSAPP_LINK_A}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackWhatsAppClick("footer")}
@@ -58,7 +58,7 @@ export default function Footer() {
             <span className="hover:text-red-500 cursor-pointer">Termos de Uso</span>
             <span className="hover:text-red-500 cursor-pointer">Política de Privacidade</span>
             <a
-              href={buildWhatsAppLink("Olá! Preciso de ajuda com a Ultraflix.")}
+              href={buildWhatsAppLink("Olá! Preciso de ajuda com a Ultraflix.", 1)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackWhatsAppClick("footer_suporte")}

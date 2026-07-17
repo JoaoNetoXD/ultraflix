@@ -2,7 +2,7 @@ import React from "react";
 import { Star, ShieldCheck, MessageCircle } from "lucide-react";
 import { motion } from "motion/react";
 import { TESTIMONIALS } from "../data";
-import { TRIAL_WHATSAPP_LINK } from "../config";
+import { TRIAL_WHATSAPP_LINK_B } from "../config";
 import { trackWhatsAppClick } from "../tracking";
 
 const TIMES = ["21:34", "19:08", "20:47", "14:22", "22:15"];
@@ -142,7 +142,7 @@ export default function Testimonials() {
             Amanhã pode ser você mandando esse depoimento. 📺
           </p>
           <a
-            href={TRIAL_WHATSAPP_LINK}
+            href={TRIAL_WHATSAPP_LINK_B}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackWhatsAppClick("depoimentos")}

@@ -148,7 +148,7 @@ export default function Plans() {
                 {/* WhatsApp CTA */}
                 <div>
                   <a
-                    href={buildPlanWhatsAppLink(plan.title, priceLabel)}
+                    href={buildPlanWhatsAppLink(plan.title, priceLabel, index)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackWhatsAppClick(`plano_${plan.id}`, { value: plan.price, currency: "BRL" })}

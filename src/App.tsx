@@ -11,7 +11,7 @@ import Footer from "./components/Footer";
 import ValueStack from "./components/ValueStack";
 import AllInOneShowcase from "./components/AllInOneShowcase";
 import SocialProofToast from "./components/SocialProofToast";
-import { TRIAL_WHATSAPP_LINK } from "./config";
+import { TRIAL_WHATSAPP_LINK_A } from "./config";
 import { trackPixel, trackCustomPixel, trackWhatsAppClick } from "./tracking";
 
 export default function App() {
@@ -116,7 +116,7 @@ export default function App() {
         </div>
 
         <a
-          href={TRIAL_WHATSAPP_LINK}
+          href={TRIAL_WHATSAPP_LINK_A}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackWhatsAppClick("barra_fixa_mobile")}

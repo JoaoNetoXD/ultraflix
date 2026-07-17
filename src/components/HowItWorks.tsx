@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { MessageCircle } from "lucide-react";
 import { HOW_IT_WORKS } from "../data";
-import { TRIAL_WHATSAPP_LINK } from "../config";
+import { TRIAL_WHATSAPP_LINK_A } from "../config";
 import { trackWhatsAppClick } from "../tracking";
 
 export default function HowItWorks() {
@@ -61,7 +61,7 @@ export default function HowItWorks() {
         {/* CTA: start step 01 right now */}
         <div className="text-center mt-12">
           <a
-            href={TRIAL_WHATSAPP_LINK}
+            href={TRIAL_WHATSAPP_LINK_A}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackWhatsAppClick("como_funciona")}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BadgeCheck } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { TRIAL_WHATSAPP_LINK } from "../config";
+import { TRIAL_WHATSAPP_LINK_B } from "../config";
 import { trackWhatsAppClick } from "../tracking";
 
 // Atividade recente exibida em rodízio — reforço social no momento da dúvida.
@@ -59,7 +59,7 @@ export default function SocialProofToast() {
         {visible && (
           <motion.a
             key={idx}
-            href={TRIAL_WHATSAPP_LINK}
+            href={TRIAL_WHATSAPP_LINK_B}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackWhatsAppClick("toast_prova_social")}
