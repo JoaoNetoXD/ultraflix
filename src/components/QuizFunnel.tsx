@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import {
   X,
   ChevronLeft,
-  ChevronRight,
   Check,
   CheckCircle2,
   Zap,
@@ -26,8 +25,8 @@ import {
   Gift,
   Star,
   Loader2,
-  Lightbulb,
   Play,
+  ChevronRight,
 } from "lucide-react";
 import { PLANS } from "../data";
 import { buildWhatsAppLink, WHATSAPP_NUMBERS } from "../config";
@@ -67,7 +66,7 @@ interface QuizStep {
   id: StepId;
   kicker: string;
   question: string;
-  fact: string;
+  fact: string; // dica da "equipe" — reduz medo/fricção
   options: QuizOption[];
 }
 
@@ -76,10 +75,10 @@ const STEPS: Record<StepId, QuizStep> = {
     id: "intent",
     kicker: "Rapidinho — o que você precisa?",
     question: "O que você quer fazer agora?",
-    fact: "Em 1 minuto a gente descobre o caminho certo pro seu aparelho e libera tudo no WhatsApp.",
+    fact: "Planos a partir de R$ 29,90, pagamento único no Pix — e você testa grátis por 30 min antes de pagar qualquer coisa. 😉",
     options: [
       { id: "teste", label: "Quero testar agora", sub: "Teste grátis de 30 min, sem pagar nada", icon: Zap },
-      { id: "precos", label: "Quero ver preços e planos", sub: "Valores claros, sem pegadinha", icon: Wallet },
+      { id: "precos", label: "Quero ver preços e planos", sub: "A partir de R$ 29,90 — sem pegadinha", icon: Wallet },
       { id: "ajuda", label: "Já tenho acesso e preciso de ajuda", sub: "Resolvemos junto com você", icon: LifeBuoy },
       { id: "ativar", label: "Quero ativar ou renovar", sub: "Pix rápido, liberação em minutos", icon: RefreshCcw },
     ],
@@ -233,6 +232,10 @@ const PROBLEM_LABEL: Record<string, string> = {
   other: "Outro problema",
 };
 
+function formatBRL(value: number): string {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
 /* ---------- Pontuação do lead (vai no [QUIZ_V1]) ---------- */
 
 function computeScore(answers: Answers): number {
@@ -275,6 +278,69 @@ function buildQuizMessage(answers: Answers): string {
   tagParts.push(`score=${score}`);
 
   return [...humanLines, "", `[QUIZ_V1 ${tagParts.join(" ")}]`].join("\n");
+}
+
+/* ---------- Mini-cards de preço (usados no quiz e no resultado) ---------- */
+
+function PlanMiniCards({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={compact ? "mb-0" : "mb-5"}>
+      <p className="font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-gray-500 uppercase text-center mb-3">
+        Preço sem surpresa — pagamento único no Pix
+      </p>
+      <div className="grid grid-cols-3 gap-2">
+        {PLANS.map((p) => (
+          <div
+            key={p.id}
+            className={`relative rounded-xl border px-2 pt-3 pb-2.5 text-center ${
+              p.recommended
+                ? "border-emerald-500/70 bg-emerald-950/40 shadow-lg shadow-emerald-900/20"
+                : "border-gray-800 bg-gray-950/60"
+            }`}
+          >
+            {p.recommended && (
+              <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-emerald-500 text-[#03140b] font-mono text-[7px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+                Mais vendido
+              </span>
+            )}
+            <p className="font-mono text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-wider">
+              {p.id === "mensal" ? "1 mês" : p.id === "semestral" ? "6 meses" : "12 meses"}
+            </p>
+            <p className={`font-display font-black text-[13px] sm:text-base leading-tight ${p.recommended ? "text-emerald-400" : "text-white"}`}>
+              {formatBRL(p.price)}
+            </p>
+            <p className="font-sans text-[8px] sm:text-[9px] text-gray-500 leading-tight">
+              {p.id === "mensal" ? "por mês" : `sai ${p.perMonthLabel}`}
+            </p>
+          </div>
+        ))}
+      </div>
+      <p className="text-center font-sans text-[10px] text-gray-500 mt-2.5">
+        Todos com <strong className="text-gray-300">teste grátis de 30 min</strong> antes de pagar + garantia de 7 dias
+      </p>
+    </div>
+  );
+}
+
+/* ---------- Dica da equipe (balão estilo WhatsApp) ---------- */
+
+function TeamTip({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-2.5 mb-6">
+      <div className="relative shrink-0">
+        <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow-md shadow-red-950/50">
+          <Play className="w-3.5 h-3.5 fill-white text-white" />
+        </div>
+        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#25D366] border-2 border-[#0a0a0a] rounded-full" />
+      </div>
+      <div className="bg-[#1f2c34] rounded-2xl rounded-tl-md px-3.5 py-2.5 shadow-md max-w-full">
+        <p className="font-sans text-[10px] font-semibold text-[#25D366] mb-0.5">
+          Equipe ULTRAFLIX <span className="text-gray-500 font-normal">• online agora</span>
+        </p>
+        <p className="font-sans text-[11.5px] sm:text-xs text-gray-200 leading-relaxed">{text}</p>
+      </div>
+    </div>
+  );
 }
 
 /* ---------- Etapa de "análise" ---------- */
@@ -347,7 +413,18 @@ function AnalyzingScreen({ answers }: { answers: Answers }) {
   );
 }
 
-/* ---------- Tela de resultado (varia por intenção) ---------- */
+/* ---------- Tela de resultado: ticket de cinema ---------- */
+
+function TicketDivider() {
+  return (
+    <div className="relative my-5">
+      {/* Recortes laterais do ticket (semicírculos "furados") */}
+      <span className="absolute -left-[34px] top-1/2 -translate-y-1/2 w-5 h-5 bg-[#0a0a0a] border border-gray-800 rounded-full" />
+      <span className="absolute -right-[34px] top-1/2 -translate-y-1/2 w-5 h-5 bg-[#0a0a0a] border border-gray-800 rounded-full" />
+      <div className="border-t-2 border-dashed border-gray-800" />
+    </div>
+  );
+}
 
 function ResultScreen({
   answers,
@@ -380,13 +457,8 @@ function ResultScreen({
 
   const isHelp = intent === "ajuda";
   const isActivate = intent === "ativar";
-  const isPrices = intent === "precos";
 
-  const badgeText = isHelp
-    ? "Suporte priorizado pra você"
-    : isActivate
-    ? "Caminho rápido de ativação"
-    : "Compatibilidade confirmada";
+  const stampText = isHelp ? "PRIORIDADE" : isActivate ? "VIP" : "APROVADO";
 
   const title = isHelp ? (
     <>Vamos resolver isso <span className="text-gradient-fire">agora</span></>
@@ -402,7 +474,6 @@ function ResultScreen({
     ? "Ativar / renovar no WhatsApp"
     : "Receber meu teste no WhatsApp";
 
-  // Próximos passos do caminho de teste — mostra que as respostas foram usadas
   const steps = isHelp
     ? [
         `Você conta o que houve — já sabemos que é: ${answers.problem ? PROBLEM_LABEL[answers.problem].toLowerCase() : "um problema no acesso"}`,
@@ -423,110 +494,94 @@ function ResultScreen({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 120, damping: 16 }}
-      className="px-5 sm:px-8 py-6 sm:py-8"
+      className="px-5 sm:px-7 py-6 sm:py-7"
     >
-      {/* Selo */}
-      <div className="flex justify-center mb-4">
+      {/* ===== TICKET ===== */}
+      <div className="relative bg-gradient-to-b from-[#111] to-[#0d0d0d] border border-gray-800 rounded-2xl px-5 sm:px-7 pt-6 pb-5 overflow-hidden shadow-2xl shadow-black/60">
+        {/* Faixa superior estilo bilhete */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 via-orange-500 to-amber-400" />
+
+        {/* Carimbo */}
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.15 }}
-          className="inline-flex items-center gap-2 bg-emerald-950/60 border border-emerald-500/40 rounded-full px-4 py-1.5"
+          initial={{ scale: 2.2, opacity: 0, rotate: -20 }}
+          animate={{ scale: 1, opacity: 1, rotate: -8 }}
+          transition={{ type: "spring", stiffness: 260, damping: 16, delay: 0.35 }}
+          className="absolute top-5 right-4 sm:right-6 border-2 border-emerald-500/70 text-emerald-400 font-mono text-[9px] sm:text-[10px] font-extrabold tracking-[0.2em] uppercase px-2 py-1 rounded-md select-none"
+          style={{ maskImage: "radial-gradient(circle at 30% 40%, black 92%, transparent 100%)" }}
         >
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span className="font-mono text-[10px] sm:text-xs font-bold tracking-widest text-emerald-400 uppercase">
-            {badgeText}
-          </span>
+          {stampText} ✓
         </motion.div>
-      </div>
 
-      <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white text-center leading-tight mb-2">
-        {title}
-      </h3>
+        <p className="font-mono text-[9px] font-bold tracking-[0.25em] text-gray-600 uppercase mb-2">
+          Ultraflix • Resultado do seu quiz
+        </p>
 
-      {!isHelp && !isActivate && (
-        <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
-          Você não precisa entender nada técnico — a gente te guia no WhatsApp.
-        </p>
-      )}
-      {isActivate && (
-        <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
-          Sem fila e sem burocracia: Pix direto no WhatsApp.
-        </p>
-      )}
-      {isHelp && (
-        <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
-          Aparelho: <strong className="text-gray-200">{device}</strong> — já vai anotado na mensagem.
-        </p>
-      )}
+        <h3 className="font-display font-extrabold text-[22px] sm:text-[26px] text-white leading-tight mb-1.5 pr-16">
+          {title}
+        </h3>
 
-      {/* Preços compactos: só pra quem pediu preço */}
-      {isPrices && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.25 }}
-          className="bg-gray-950/70 border border-gray-800 rounded-2xl divide-y divide-gray-900 mb-5 overflow-hidden"
-        >
-          {PLANS.map((p) => (
-            <div key={p.id} className={`flex items-center justify-between px-4 py-3 ${p.recommended ? "bg-emerald-950/30" : ""}`}>
-              <div className="min-w-0">
-                <p className="font-display font-bold text-xs text-white uppercase tracking-wide">
-                  {p.title.replace("PLANO ", "")}
-                  {p.recommended && (
-                    <span className="ml-2 font-mono text-[8px] font-extrabold text-emerald-400 border border-emerald-700/50 rounded px-1.5 py-0.5 uppercase">
-                      Mais vendido
-                    </span>
-                  )}
-                </p>
-                <p className="font-sans text-[10px] text-gray-500">
-                  {p.id === "mensal" ? "por mês" : p.id === "semestral" ? "pagamento único pelos 6 meses" : "pagamento único pelo ano"}
-                  {p.perMonthLabel ? ` • equivale a ${p.perMonthLabel}` : ""}
-                </p>
-              </div>
-              <p className="font-display font-black text-base sm:text-lg text-emerald-400 shrink-0 ml-3">
-                {p.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-              </p>
-            </div>
+        {!isHelp && !isActivate && (
+          <p className="font-sans text-xs sm:text-sm text-gray-400 mb-4">
+            Você não precisa entender nada técnico — a gente te guia no WhatsApp.
+          </p>
+        )}
+        {isActivate && (
+          <p className="font-sans text-xs sm:text-sm text-gray-400 mb-4">
+            Sem fila e sem burocracia: Pix direto no WhatsApp.
+          </p>
+        )}
+        {isHelp && (
+          <p className="font-sans text-xs sm:text-sm text-gray-400 mb-4">
+            Aparelho: <strong className="text-gray-200">{device}</strong> — já vai anotado na mensagem.
+          </p>
+        )}
+
+        {/* Próximos passos numerados */}
+        <div className="space-y-2.5">
+          {steps.map((item, i) => (
+            <motion.div
+              key={item}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.35 + i * 0.12 }}
+              className="flex items-start gap-3"
+            >
+              <span className="w-5 h-5 rounded-full bg-red-600/20 border border-red-600/40 text-red-400 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                {i + 1}
+              </span>
+              <span className="font-sans text-xs sm:text-sm text-gray-200">{item}</span>
+            </motion.div>
           ))}
-          <p className="px-4 py-2.5 font-sans text-[10px] text-gray-500 text-center">
-            Todos com teste grátis de 30 min antes de pagar + garantia de 7 dias
-          </p>
-        </motion.div>
-      )}
-
-      {/* Próximos passos numerados */}
-      <div className="space-y-2.5 mb-5">
-        {steps.map((item, i) => (
-          <motion.div
-            key={item}
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.35 + i * 0.12 }}
-            className="flex items-start gap-3"
-          >
-            <span className="w-5 h-5 rounded-full bg-red-600/20 border border-red-600/40 text-red-400 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-              {i + 1}
-            </span>
-            <span className="font-sans text-xs sm:text-sm text-gray-200">{item}</span>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Garantia operacional: nunca beco sem saída */}
-      {!isActivate && (
-        <div className="flex items-start gap-2 bg-gray-950/70 border border-gray-900 rounded-xl px-3 py-2.5 mb-5">
-          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-          <p className="font-sans text-[11px] sm:text-xs text-gray-400 leading-relaxed">
-            Não achou o aplicativo? A gente indica outra opção compatível.{" "}
-            <strong className="text-gray-300">Você não fica na mão.</strong>
-          </p>
         </div>
-      )}
+
+        {/* Garantia operacional: nunca beco sem saída */}
+        {!isActivate && (
+          <div className="flex items-start gap-2 bg-black/40 border border-gray-900 rounded-xl px-3 py-2.5 mt-4">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <p className="font-sans text-[11px] sm:text-xs text-gray-400 leading-relaxed">
+              Não achou o aplicativo? A gente indica outra opção compatível.{" "}
+              <strong className="text-gray-300">Você não fica na mão.</strong>
+            </p>
+          </div>
+        )}
+
+        {/* Serrilha do ticket */}
+        <TicketDivider />
+
+        {/* Preços: transparência total antes do WhatsApp */}
+        {!isActivate && !isHelp && <PlanMiniCards compact />}
+        {(isActivate || isHelp) && (
+          <p className="text-center font-sans text-[11px] text-gray-500">
+            Planos: <strong className="text-gray-300">{formatBRL(29.9)}</strong>/mês •{" "}
+            6 meses por <strong className="text-emerald-400">{formatBRL(69.9)}</strong> •{" "}
+            1 ano por <strong className="text-gray-300">{formatBRL(129.9)}</strong> — pagamento único
+          </p>
+        )}
+      </div>
 
       {/* Urgência: só no caminho de teste */}
       {intent === "teste" && (
-        <div className="flex items-center justify-center gap-2 mb-4">
+        <div className="flex items-center justify-center gap-2 mt-4 mb-3">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
@@ -537,6 +592,7 @@ function ResultScreen({
           </p>
         </div>
       )}
+      {intent !== "teste" && <div className="mt-4" />}
 
       {/* CTA principal */}
       <motion.a
@@ -720,7 +776,7 @@ export default function QuizFunnel() {
           >
             {/* Header do quiz */}
             <div className="sticky top-0 z-10 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-gray-900/80 px-4 py-3">
-              <div className="flex items-center justify-between mb-2.5">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-1.5 select-none">
                   <div className="bg-red-600 p-1 rounded-md">
                     <Play className="w-3.5 h-3.5 fill-white text-white" />
@@ -735,7 +791,7 @@ export default function QuizFunnel() {
                 <div className="flex items-center gap-2">
                   {phase === "quiz" && (
                     <span className="font-mono text-[10px] text-gray-500">
-                      {stepIndex + 1}/{totalSteps}
+                      {stepIndex + 1}<span className="text-gray-700">/{totalSteps}</span>
                     </span>
                   )}
                   <button
@@ -748,15 +804,21 @@ export default function QuizFunnel() {
                 </div>
               </div>
 
-              {/* Barra de progresso */}
-              <div className="h-1.5 bg-gray-900 rounded-full overflow-hidden">
-                <motion.div
-                  animate={{
-                    width: `${phase === "quiz" ? ((stepIndex + (selected ? 1 : 0)) / totalSteps) * 100 : 100}%`,
-                  }}
-                  transition={{ type: "spring", stiffness: 120, damping: 20 }}
-                  className="h-full bg-gradient-to-r from-red-600 via-orange-500 to-amber-400 rounded-full"
-                />
+              {/* Progresso segmentado: um traço por pergunta */}
+              <div className="flex gap-1.5">
+                {path.map((s, i) => {
+                  const donePast = phase !== "quiz" || i < stepIndex || (i === stepIndex && !!selected);
+                  const isCurrent = phase === "quiz" && i === stepIndex && !selected;
+                  return (
+                    <div key={s} className="h-1 flex-1 rounded-full bg-gray-900 overflow-hidden">
+                      <motion.div
+                        animate={{ width: donePast ? "100%" : isCurrent ? "35%" : "0%" }}
+                        transition={{ type: "spring", stiffness: 140, damping: 22 }}
+                        className="h-full bg-gradient-to-r from-red-600 via-orange-500 to-amber-400 rounded-full"
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -774,29 +836,36 @@ export default function QuizFunnel() {
                     initial={{ opacity: 0, x: 40 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.22 }}
-                    className="px-5 sm:px-8 py-6 sm:py-7"
+                    className="relative px-5 sm:px-8 py-6 sm:py-7"
                   >
+                    {/* Número fantasma da pergunta */}
+                    <span
+                      aria-hidden
+                      className="absolute -top-2 right-3 font-display font-black text-[96px] sm:text-[120px] leading-none text-white/[0.035] select-none pointer-events-none"
+                    >
+                      {String(stepIndex + 1).padStart(2, "0")}
+                    </span>
+
                     {/* Kicker + pergunta */}
-                    <p className="font-mono text-[10px] sm:text-[11px] font-bold tracking-widest text-red-500 uppercase mb-2">
-                      {step.kicker}
-                    </p>
-                    <h3 className="font-display font-extrabold text-xl sm:text-2xl text-white leading-tight mb-4">
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <span className="w-6 h-px bg-red-600" />
+                      <p className="font-mono text-[10px] sm:text-[11px] font-bold tracking-widest text-red-500 uppercase">
+                        {step.kicker}
+                      </p>
+                    </div>
+                    <h3 className="font-display font-extrabold text-[22px] sm:text-[26px] text-white leading-tight mb-4">
                       {step.question}
                     </h3>
 
-                    {/* Fato que reduz medo/fricção */}
-                    <div className="flex items-start gap-2 bg-gray-950/70 border border-gray-900 rounded-xl px-3 py-2.5 mb-5">
-                      <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                      <p className="font-sans text-[11px] sm:text-xs text-gray-400 leading-relaxed">
-                        {step.fact}
-                      </p>
-                    </div>
+                    {/* Dica da equipe (balão WhatsApp) */}
+                    <TeamTip text={step.fact} />
 
                     {/* Opções */}
                     <div className="space-y-2.5">
-                      {step.options.map((opt) => {
+                      {step.options.map((opt, i) => {
                         const Icon = opt.icon;
                         const isSelected = selected === opt.id;
+                        const letter = String.fromCharCode(65 + i);
                         return (
                           <motion.button
                             key={opt.id}
@@ -805,7 +874,7 @@ export default function QuizFunnel() {
                             className={`w-full flex items-center gap-3.5 text-left rounded-2xl border px-4 py-3.5 transition-all duration-200 cursor-pointer group ${
                               isSelected
                                 ? "border-emerald-500 bg-emerald-950/40 shadow-lg shadow-emerald-600/10"
-                                : "border-gray-800 bg-gray-950/50 hover:border-red-600/60 hover:bg-red-950/20"
+                                : "border-gray-800 bg-gray-950/50 hover:border-red-600/70 hover:bg-red-950/20 hover:translate-x-1 hover:shadow-[0_0_24px_rgba(220,38,38,0.12)]"
                             }`}
                           >
                             <div
@@ -836,12 +905,14 @@ export default function QuizFunnel() {
                               <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0"
+                                className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center shrink-0"
                               >
                                 <Check className="w-4 h-4 text-white" strokeWidth={3} />
                               </motion.div>
                             ) : (
-                              <ChevronRight className="w-4.5 h-4.5 text-gray-700 group-hover:text-red-500 transition-colors shrink-0" />
+                              <span className="w-6 h-6 rounded-md border border-gray-800 text-gray-600 group-hover:border-red-600/60 group-hover:text-red-400 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 transition-colors">
+                                {letter}
+                              </span>
                             )}
                           </motion.button>
                         );
@@ -862,27 +933,34 @@ export default function QuizFunnel() {
               )}
             </div>
 
-            {/* Rodapé: prova social fixa */}
+            {/* Rodapé: prova social + preços sempre à vista */}
             {phase === "quiz" && (
-              <div className="border-t border-gray-900/80 px-5 py-3 flex items-center justify-center gap-2">
-                <div className="flex -space-x-1.5">
-                  {[
-                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=40&h=40&q=60",
-                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=40&h=40&q=60",
-                    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=40&h=40&q=60",
-                  ].map((src) => (
-                    <img
-                      key={src}
-                      src={src}
-                      alt=""
-                      referrerPolicy="no-referrer"
-                      className="w-5 h-5 rounded-full border border-gray-800 object-cover"
-                    />
-                  ))}
+              <div className="border-t border-gray-900/80 px-5 py-3 space-y-1.5">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="flex -space-x-1.5">
+                    {[
+                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=40&h=40&q=60",
+                      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=40&h=40&q=60",
+                      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=40&h=40&q=60",
+                    ].map((src) => (
+                      <img
+                        key={src}
+                        src={src}
+                        alt=""
+                        referrerPolicy="no-referrer"
+                        className="w-5 h-5 rounded-full border border-gray-800 object-cover"
+                      />
+                    ))}
+                  </div>
+                  <p className="font-sans text-[10px] text-gray-500">
+                    <strong className="text-gray-300">+3.700 pessoas</strong> já fizeram o teste grátis
+                    <span className="text-amber-400 ml-1">★ 5.0</span>
+                  </p>
                 </div>
-                <p className="font-sans text-[10px] text-gray-500">
-                  <strong className="text-gray-300">+3.700 pessoas</strong> já fizeram o teste grátis
-                  <span className="text-amber-400 ml-1">★ 5.0</span>
+                <p className="text-center font-sans text-[10px] text-gray-600">
+                  Planos: <strong className="text-gray-400">R$ 29,90</strong>/mês • 6 meses{" "}
+                  <strong className="text-emerald-500">R$ 69,90</strong> • 1 ano{" "}
+                  <strong className="text-gray-400">R$ 129,90</strong> — pagamento único, teste grátis antes
                 </p>
               </div>
             )}
