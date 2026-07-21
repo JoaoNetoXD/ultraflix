@@ -6,32 +6,26 @@ import {
   ChevronRight,
   Check,
   CheckCircle2,
-  Clapperboard,
-  Popcorn,
-  Heart,
-  Trophy,
-  Flame,
-  Tv,
-  Smartphone,
-  Cpu,
-  Laptop,
-  User,
-  Users,
-  Home,
+  Zap,
   Wallet,
-  BadgeDollarSign,
-  PiggyBank,
-  Ban,
-  WifiOff,
-  Layers,
+  LifeBuoy,
+  RefreshCcw,
+  Tv,
+  Cpu,
+  Smartphone,
+  Laptop,
+  HelpCircle,
+  Clock,
+  Search,
+  KeyRound,
   CreditCard,
+  WifiOff,
+  AlertTriangle,
   MessageCircle,
   ShieldCheck,
-  Zap,
   Gift,
   Star,
   Loader2,
-  Sparkles,
   Lightbulb,
   Play,
 } from "lucide-react";
@@ -40,10 +34,16 @@ import { buildWhatsAppLink, WHATSAPP_NUMBERS } from "../config";
 import { trackPixel, trackCustomPixel, trackWhatsAppClick } from "../tracking";
 
 /* ============================================================
-   QUIZ FUNNEL ULTRAFLIX
-   Objetivo: qualificar + educar o lead ANTES de chegar no WhatsApp.
-   O atendente recebe a mensagem já com perfil completo do cliente.
-   Abrir de qualquer lugar: openQuiz("fonte") ou acessando #quiz.
+   QUIZ FUNNEL ULTRAFLIX v2 — desenhado a partir dos dados do CRM.
+
+   O público não chega querendo catálogo: chega querendo saber se
+   funciona no aparelho dele e testar AGORA. O quiz descobre:
+   intenção → aparelho → ano da TV (Samsung/LG) → app instalado →
+   se está perto do aparelho. Caminho de ajuda pergunta o problema.
+   Ativação/renovação pula tudo e vai direto pro WhatsApp.
+
+   A mensagem final leva um resumo legível + linha estruturada
+   [QUIZ_V1 ...] que a IA/CRM lê e salva automaticamente.
    ============================================================ */
 
 const OPEN_QUIZ_EVENT = "ultraflix:open-quiz";
@@ -54,174 +54,258 @@ export function openQuiz(source: string = "direct") {
 
 /* ---------- Tipos e dados das perguntas ---------- */
 
+type StepId = "intent" | "device" | "tv_year" | "app_status" | "ready" | "problem";
+
 interface QuizOption {
   id: string;
   label: string;
   sub?: string;
   icon: React.ElementType;
-  emoji?: string;
 }
 
 interface QuizStep {
-  id: string;
-  kicker: string; // micro-copy acima da pergunta
+  id: StepId;
+  kicker: string;
   question: string;
-  fact: string; // 💡 fato educativo mostrado junto da pergunta
+  fact: string;
   options: QuizOption[];
 }
 
-const STEPS: QuizStep[] = [
-  {
-    id: "interesse",
-    kicker: "Pergunta 1 — Seu gosto",
-    question: "O que você MAIS quer assistir?",
-    fact: "A Ultraflix reúne filmes, séries, novelas e esportes ao vivo num app só — sem pular de assinatura em assinatura.",
+const STEPS: Record<StepId, QuizStep> = {
+  intent: {
+    id: "intent",
+    kicker: "Rapidinho — o que você precisa?",
+    question: "O que você quer fazer agora?",
+    fact: "Em 1 minuto a gente descobre o caminho certo pro seu aparelho e libera tudo no WhatsApp.",
     options: [
-      { id: "filmes", label: "Filmes de cinema", sub: "Lançamentos em 4K", icon: Clapperboard },
-      { id: "series", label: "Séries completas", sub: "Todas as temporadas", icon: Popcorn },
-      { id: "novelas", label: "Novelas", sub: "Assista na hora que quiser", icon: Heart },
-      { id: "futebol", label: "Futebol ao vivo", sub: "Brasileirão, Libertadores e Champions", icon: Trophy },
-      { id: "tudo", label: "TUDO isso!", sub: "A escolha de 8 em cada 10 clientes", icon: Flame },
+      { id: "teste", label: "Quero testar agora", sub: "Teste grátis de 30 min, sem pagar nada", icon: Zap },
+      { id: "precos", label: "Quero ver preços e planos", sub: "Valores claros, sem pegadinha", icon: Wallet },
+      { id: "ajuda", label: "Já tenho acesso e preciso de ajuda", sub: "Resolvemos junto com você", icon: LifeBuoy },
+      { id: "ativar", label: "Quero ativar ou renovar", sub: "Pix rápido, liberação em minutos", icon: RefreshCcw },
     ],
   },
-  {
-    id: "aparelho",
-    kicker: "Pergunta 2 — Compatibilidade",
-    question: "Onde você vai assistir?",
-    fact: "Funciona em Samsung, LG, TCL, Fire Stick, Chromecast, celular e computador. No teste grátis você já confere no SEU aparelho.",
+  device: {
+    id: "device",
+    kicker: "Seu aparelho",
+    question: "Onde você quer assistir?",
+    fact: "Cada aparelho tem um aplicativo certo. Escolhendo aqui, você não perde tempo com app errado.",
     options: [
-      { id: "smarttv", label: "Smart TV", sub: "Samsung, LG, TCL, Roku…", icon: Tv },
-      { id: "celular", label: "Celular ou tablet", sub: "Android e iPhone", icon: Smartphone },
-      { id: "tvbox", label: "TV Box / Fire Stick", sub: "Chromecast, Mi Box…", icon: Cpu },
-      { id: "computador", label: "Computador", sub: "Direto no navegador", icon: Laptop },
+      { id: "samsung", label: "TV Samsung", icon: Tv },
+      { id: "lg", label: "TV LG", icon: Tv },
+      { id: "roku", label: "TV com Roku", sub: "TCL, Philco, AOC com Roku", icon: Tv },
+      { id: "androidtv", label: "Android TV / TV Box / Fire Stick", icon: Cpu },
+      { id: "celular", label: "Celular ou tablet", icon: Smartphone },
+      { id: "pc", label: "Computador ou notebook", icon: Laptop },
+      { id: "outro", label: "Outro / não sei", sub: "Sem problema — a gente descobre junto", icon: HelpCircle },
     ],
   },
-  {
-    id: "pessoas",
-    kicker: "Pergunta 3 — Sua casa",
-    question: "Quantas pessoas assistem aí na sua casa?",
-    fact: "Nossos planos têm até 5 telas simultâneas: cada um assiste o que quiser, ao mesmo tempo, sem travar.",
+  tv_year: {
+    id: "tv_year",
+    kicker: "Sua TV",
+    question: "Sua TV é de que ano, mais ou menos?",
+    fact: "O ano muda qual aplicativo funciona melhor. Chutou errado? Tranquilo — a gente ajusta no WhatsApp.",
     options: [
-      { id: "so_eu", label: "Só eu", sub: "Acesso individual", icon: User },
-      { id: "duas", label: "Eu + 1 pessoa", sub: "Casal ou dupla", icon: Users },
-      { id: "familia", label: "3 ou 4 pessoas", sub: "Família conectada", icon: Home },
-      { id: "casa_cheia", label: "5 ou mais", sub: "Casa cheia!", icon: Home },
+      { id: "2022_plus", label: "2022 ou mais nova", icon: Tv },
+      { id: "2018_2021", label: "Entre 2018 e 2021", icon: Tv },
+      { id: "pre2018", label: "Antes de 2018", icon: Tv },
+      { id: "unknown", label: "Não sei", sub: "Sem stress, descobrimos pelo WhatsApp", icon: HelpCircle },
     ],
   },
-  {
-    id: "gasto",
-    kicker: "Pergunta 4 — Seu bolso",
-    question: "Quanto você gasta HOJE por mês com streaming ou TV?",
-    fact: "A média brasileira passa de R$ 80/mês somando streamings. Na Ultraflix, tudo sai a partir de R$ 0,36 por dia.",
+  app_status: {
+    id: "app_status",
+    kicker: "Quase lá",
+    question: "Você já tem algum aplicativo de TV instalado?",
+    fact: "Se já tiver um app compatível, seu teste sai ainda mais rápido.",
     options: [
-      { id: "nada", label: "Nada ainda", sub: "Uso os gratuitos", icon: Ban },
-      { id: "ate30", label: "Até R$ 30", sub: "1 assinatura", icon: Wallet },
-      { id: "30a60", label: "R$ 30 a R$ 60", sub: "2 assinaturas", icon: BadgeDollarSign },
-      { id: "60mais", label: "Mais de R$ 60", sub: "Várias assinaturas 😱", icon: PiggyBank },
+      { id: "sim", label: "Já tenho um app", sub: "Ótimo — pode ser que já sirva", icon: Check },
+      { id: "nao", label: "Ainda não", sub: "A gente indica o certo, com link e foto", icon: Search },
+      { id: "nao_sei", label: "Não sei dizer", sub: "Sem problema, verificamos juntos", icon: HelpCircle },
     ],
   },
-  {
-    id: "dor",
-    kicker: "Pergunta 5 — Sinceridade",
-    question: "O que mais te IRRITA nos streamings de hoje?",
-    fact: "É por isso que aqui é diferente: pagamento único via Pix, sem cartão, sem mensalidade escondida e suporte humano no WhatsApp.",
+  ready: {
+    id: "ready",
+    kicker: "Última!",
+    question: "Você está perto da TV (ou do aparelho) agora?",
+    fact: "Quem faz na hora recebe prioridade: dá pra sair assistindo em poucos minutos.",
     options: [
-      { id: "preco", label: "Preço somando todo mês", sub: "Assinatura em cima de assinatura", icon: CreditCard },
-      { id: "espalhado", label: "Conteúdo espalhado", sub: "Cada série num app diferente", icon: Layers },
-      { id: "travando", label: "Travamento e qualidade ruim", sub: "Imagem embaçada, buffering…", icon: WifiOff },
-      { id: "cartao", label: "Cadastrar cartão de crédito", sub: "Cobrança recorrente surpresa", icon: Ban },
+      { id: "sim", label: "Sim! Bora fazer agora", sub: "Teste liberado em minutos", icon: Zap },
+      { id: "depois", label: "Não, faço mais tarde", sub: "Te mandamos tudo prontinho pra depois", icon: Clock },
     ],
   },
-  {
-    id: "esportes",
-    kicker: "Pergunta 6 — Esportes ao vivo",
-    question: "Brasileirão e Libertadores ao vivo em 4K: você quer?",
-    fact: "Todos os jogos do Brasileirão, Libertadores e Champions ao vivo em 4K — e ainda UFC e NBA, sem pagar nada a mais.",
+  problem: {
+    id: "problem",
+    kicker: "Vamos resolver",
+    question: "O que aconteceu?",
+    fact: "Nosso suporte assume a parte técnica e te fala exatamente o que fazer, passo a passo.",
     options: [
-      { id: "quero", label: "QUERO MUITO! ⚽", sub: "Todos os jogos em 4K", icon: Trophy },
-      { id: "talvez", label: "Talvez, alguns jogos", sub: "Os do meu time pelo menos", icon: Star },
-      { id: "nao_ligo", label: "Não ligo pra futebol", sub: "Prefiro filmes e séries", icon: Popcorn },
+      { id: "app_not_found", label: "Não encontro o aplicativo", icon: Search },
+      { id: "app_paid", label: "O app pede pagamento ou ativação", icon: CreditCard },
+      { id: "credentials", label: "Não sei onde colocar o acesso", sub: "Usuário, senha, código…", icon: KeyRound },
+      { id: "buffering", label: "Está travando ou carregando", icon: WifiOff },
+      { id: "test_failed", label: "Meu teste não funcionou", icon: AlertTriangle },
+      { id: "other", label: "É outro problema", icon: MessageCircle },
     ],
   },
-  {
-    id: "teste",
-    kicker: "Última pergunta!",
-    question: "Quer seu TESTE GRÁTIS de 30 minutos liberado agora?",
-    fact: "O teste é 100% grátis: sem cartão, sem cadastro. Você instala, assiste 30 min e só paga se amar.",
-    options: [
-      { id: "sim", label: "SIM! Libera agora 🚀", sub: "Quero comprovar a qualidade", icon: Zap },
-      { id: "resultado", label: "Ver meu resultado primeiro", sub: "Mostra o plano ideal pra mim", icon: Sparkles },
-    ],
-  },
-];
-
-/* ---------- Mapeamentos para o resultado ---------- */
-
-const INTEREST_LABEL: Record<string, string> = {
-  filmes: "Filmes de cinema",
-  series: "Séries completas",
-  novelas: "Novelas",
-  futebol: "Futebol ao vivo",
-  tudo: "Tudo (filmes, séries, novelas e futebol)",
 };
+
+/* ---------- Fluxo com ramificação ---------- */
+
+type Answers = Partial<Record<StepId, string>>;
+
+function nextStepAfter(current: StepId, answers: Answers): StepId | null {
+  const intent = answers.intent;
+  switch (current) {
+    case "intent":
+      if (intent === "ativar") return null; // pula tudo: direto pro WhatsApp
+      return "device";
+    case "device": {
+      const d = answers.device;
+      if (d === "samsung" || d === "lg") return "tv_year";
+      return intent === "ajuda" ? "problem" : "app_status";
+    }
+    case "tv_year":
+      return intent === "ajuda" ? "problem" : "app_status";
+    case "app_status":
+      return "ready";
+    case "ready":
+    case "problem":
+      return null;
+  }
+}
+
+// Caminho previsto (para barra de progresso e contador X/Y)
+function plannedPath(answers: Answers): StepId[] {
+  const path: StepId[] = ["intent"];
+  let current: StepId = "intent";
+  // Simula o fluxo; onde ainda não respondeu, assume o caminho comum
+  const assumed: Answers = { intent: "teste", device: "androidtv", ...answers };
+  while (true) {
+    const next = nextStepAfter(current, assumed);
+    if (!next) break;
+    path.push(next);
+    current = next;
+  }
+  return path;
+}
+
+/* ---------- Labels para mensagem e resultado ---------- */
 
 const DEVICE_LABEL: Record<string, string> = {
-  smarttv: "Smart TV",
-  celular: "Celular/Tablet",
-  tvbox: "TV Box / Fire Stick",
-  computador: "Computador",
+  samsung: "TV Samsung",
+  lg: "TV LG",
+  roku: "TV com Roku",
+  androidtv: "Android TV / TV Box / Fire Stick",
+  celular: "Celular ou tablet",
+  pc: "Computador",
+  outro: "Ainda vou confirmar",
 };
 
-const PEOPLE_LABEL: Record<string, string> = {
-  so_eu: "1 pessoa",
-  duas: "2 pessoas",
-  familia: "3 a 4 pessoas",
-  casa_cheia: "5 ou mais pessoas",
+// Frase com artigo certo para títulos ("pra sua TV Samsung", "pro seu celular")
+const DEVICE_PHRASE: Record<string, string> = {
+  samsung: "sua TV Samsung",
+  lg: "sua TV LG",
+  roku: "sua TV com Roku",
+  androidtv: "seu TV Box / Fire Stick",
+  celular: "seu celular ou tablet",
+  pc: "seu computador",
+  outro: "seu aparelho",
 };
 
-// Estimativa de gasto mensal atual -> cálculo de economia anual
-const SPEND_ESTIMATE: Record<string, number> = {
-  nada: 0,
-  ate30: 30,
-  "30a60": 45,
-  "60mais": 75,
+const YEAR_LABEL: Record<string, string> = {
+  "2022_plus": "2022 ou mais nova",
+  "2018_2021": "2018 a 2021",
+  pre2018: "antes de 2018",
+  unknown: "não sei",
 };
 
-function recommendPlan(answers: Record<string, string>) {
-  // Casa cheia precisa de 5 telas -> ANUAL. Resto: SEMESTRAL (mais vendido).
-  const planId = answers.pessoas === "casa_cheia" ? "anual" : "semestral";
-  return PLANS.find((p) => p.id === planId) ?? PLANS[1];
+const APP_LABEL: Record<string, string> = {
+  sim: "já tenho",
+  nao: "ainda não",
+  nao_sei: "não sei",
+};
+
+const PROBLEM_LABEL: Record<string, string> = {
+  app_not_found: "Não encontro o aplicativo",
+  app_paid: "O app pede pagamento/ativação",
+  credentials: "Não sei onde colocar o acesso",
+  buffering: "Está travando ou carregando",
+  test_failed: "Meu teste não funcionou",
+  other: "Outro problema",
+};
+
+/* ---------- Pontuação do lead (vai no [QUIZ_V1]) ---------- */
+
+function computeScore(answers: Answers): number {
+  let score = 0;
+  if (answers.intent === "ativar") score += 30;
+  if (answers.intent === "teste") score += 20;
+  if (answers.intent === "precos") score += 8;
+  if (answers.intent === "ajuda") score += 5;
+  if (answers.ready === "sim") score += 15;
+  if (answers.ready === "depois") score -= 5;
+  if (answers.device && answers.device !== "outro") score += 10;
+  if (answers.app_status === "sim") score += 10;
+  return score;
 }
 
-function formatBRL(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+/* ---------- Mensagem: resumo legível + linha estruturada ---------- */
+
+function buildQuizMessage(answers: Answers): string {
+  const intent = answers.intent ?? "teste";
+  const score = computeScore(answers);
+
+  const humanLines: string[] = [];
+  if (intent === "teste") humanLines.push("Olá! Fiz o quiz e quero testar agora. 🎬");
+  if (intent === "precos") humanLines.push("Olá! Fiz o quiz e quero ver os planos — e já aceito o teste grátis. 🎬");
+  if (intent === "ajuda") humanLines.push("Olá! Fiz o quiz e preciso de ajuda com meu acesso.");
+  if (intent === "ativar") humanLines.push("Olá! Quero ativar ou renovar meu acesso. 🚀");
+
+  if (answers.device) humanLines.push(`Meu aparelho: ${DEVICE_LABEL[answers.device]}`);
+  if (answers.tv_year) humanLines.push(`Ano aproximado da TV: ${YEAR_LABEL[answers.tv_year]}`);
+  if (answers.app_status) humanLines.push(`Aplicativo instalado: ${APP_LABEL[answers.app_status]}`);
+  if (answers.ready) humanLines.push(`Estou perto do aparelho: ${answers.ready === "sim" ? "sim" : "farei mais tarde"}`);
+  if (answers.problem) humanLines.push(`Problema: ${PROBLEM_LABEL[answers.problem]}`);
+
+  const tagParts = [`intent=${intent}`];
+  if (answers.device) tagParts.push(`device=${answers.device}`);
+  if (answers.tv_year) tagParts.push(`device_age=${answers.tv_year}`);
+  if (answers.app_status) tagParts.push(`app_status=${answers.app_status}`);
+  if (answers.ready) tagParts.push(`ready_now=${answers.ready === "sim"}`);
+  if (answers.problem) tagParts.push(`problem=${answers.problem}`);
+  tagParts.push(`score=${score}`);
+
+  return [...humanLines, "", `[QUIZ_V1 ${tagParts.join(" ")}]`].join("\n");
 }
 
-/* ---------- Etapa de "análise" (teatro de qualificação) ---------- */
+/* ---------- Etapa de "análise" ---------- */
 
-const ANALYSIS_LINES = [
-  "Verificando compatibilidade com seu aparelho…",
-  "Calculando sua economia anual…",
-  "Reservando seu teste grátis de 30 minutos…",
-  "Montando seu resultado personalizado…",
-];
-
-function AnalyzingScreen({ device }: { device: string }) {
+function AnalyzingScreen({ answers }: { answers: Answers }) {
   const [done, setDone] = useState(0);
 
+  const device = answers.device ? DEVICE_PHRASE[answers.device] : "seu aparelho";
+  const lines =
+    answers.intent === "ajuda"
+      ? ["Lendo o que aconteceu…", `Verificando o caminho para ${device}…`, "Preparando a solução no WhatsApp…"]
+      : answers.intent === "ativar"
+      ? ["Localizando seu perfil…", "Preparando a reativação via Pix…"]
+      : [
+          `Verificando compatibilidade com ${device}…`,
+          "Selecionando o aplicativo certo…",
+          "Reservando seu teste grátis de 30 minutos…",
+        ];
+
   useEffect(() => {
-    if (done >= ANALYSIS_LINES.length) return;
+    if (done >= lines.length) return;
     const t = setTimeout(() => setDone((d) => d + 1), 620);
     return () => clearTimeout(t);
-  }, [done]);
+  }, [done, lines.length]);
 
   return (
     <motion.div
       key="analyzing"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center text-center px-6 py-10 min-h-[420px]"
+      className="flex flex-col items-center justify-center text-center px-6 py-10 min-h-[380px]"
     >
       <div className="relative mb-8">
         <motion.div
@@ -233,14 +317,13 @@ function AnalyzingScreen({ device }: { device: string }) {
       </div>
 
       <h3 className="font-display font-extrabold text-xl sm:text-2xl text-white mb-6">
-        Analisando seu perfil…
+        Montando seu caminho…
       </h3>
 
       <div className="space-y-3 w-full max-w-xs text-left">
-        {ANALYSIS_LINES.map((line, i) => {
+        {lines.map((line, i) => {
           const finished = i < done;
           const active = i === done;
-          const displayed = line.replace("seu aparelho", DEVICE_LABEL[device] ?? "seu aparelho");
           return (
             <motion.div
               key={line}
@@ -254,7 +337,7 @@ function AnalyzingScreen({ device }: { device: string }) {
                 <Loader2 className={`w-4.5 h-4.5 shrink-0 ${active ? "text-red-400 animate-spin" : "text-gray-700"}`} />
               )}
               <span className={`font-sans text-xs sm:text-sm ${finished ? "text-gray-300" : "text-gray-500"}`}>
-                {displayed}
+                {line}
               </span>
             </motion.div>
           );
@@ -264,66 +347,75 @@ function AnalyzingScreen({ device }: { device: string }) {
   );
 }
 
-/* ---------- Tela de resultado ---------- */
+/* ---------- Tela de resultado (varia por intenção) ---------- */
 
 function ResultScreen({
   answers,
   onSeePlans,
 }: {
-  answers: Record<string, string>;
+  answers: Answers;
   onSeePlans: () => void;
 }) {
-  const plan = useMemo(() => recommendPlan(answers), [answers]);
-  const [secondsLeft, setSecondsLeft] = useState(10 * 60);
+  const intent = answers.intent ?? "teste";
+  const device = answers.device ? DEVICE_LABEL[answers.device] : "seu aparelho";
+  const devicePhrase = answers.device ? DEVICE_PHRASE[answers.device] : "seu aparelho";
+  const readyNow = answers.ready === "sim";
 
+  const [secondsLeft, setSecondsLeft] = useState(10 * 60);
   useEffect(() => {
+    if (intent !== "teste") return;
     const t = setInterval(() => setSecondsLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
     return () => clearInterval(t);
-  }, []);
-
+  }, [intent]);
   const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
   const seconds = String(secondsLeft % 60).padStart(2, "0");
 
-  const currentSpend = SPEND_ESTIMATE[answers.gasto] ?? 0;
-  const yearlyNow = currentSpend * 12;
-  // Custo anual equivalente do plano recomendado
-  const planYearlyCost = plan.id === "anual" ? plan.price : plan.price * 2;
-  const yearlySavings = Math.max(0, yearlyNow - planYearlyCost);
-
-  // Deixa CLARO que é pagamento único por um período — não mensalidade.
-  const isOneTime = plan.id !== "mensal";
-  const durationPhrase =
-    plan.id === "anual"
-      ? "pelo ano inteiro"
-      : plan.id === "semestral"
-      ? "pelos 6 meses inteiros"
-      : "no mês";
-
-  const wantsSports = answers.esportes === "quero" || answers.esportes === "talvez";
-
-  // Mensagem qualificada: atendente recebe o perfil completo do lead
-  const waMessage = [
-    "Olá! Acabei de fazer o QUIZ da ULTRAFLIX ✅ Meu perfil:",
-    `🎬 Quero assistir: ${INTEREST_LABEL[answers.interesse] ?? "Tudo"}`,
-    `📺 Aparelho: ${DEVICE_LABEL[answers.aparelho] ?? "Smart TV"}`,
-    `👨‍👩‍👧 Assistem em casa: ${PEOPLE_LABEL[answers.pessoas] ?? "1 pessoa"}`,
-    ...(wantsSports ? ["⚽ Quero futebol ao vivo (Brasileirão/Libertadores)"] : []),
-    `⭐ Plano recomendado: ${plan.title} (${formatBRL(plan.price)}${plan.durationText.trim()})`,
-    "",
-    "Quero meu TESTE GRÁTIS de 30 minutos agora! 🚀",
-  ].join("\n");
-
   // Divide os leads 50/50 entre os dois números
   const numberIndex = useMemo(() => Math.floor(Math.random() * WHATSAPP_NUMBERS.length), []);
-  const waLink = buildWhatsAppLink(waMessage, numberIndex);
+  const waLink = buildWhatsAppLink(buildQuizMessage(answers), numberIndex);
+  const doubtLink = buildWhatsAppLink(
+    `Olá! Fiz o quiz mas quero tirar uma dúvida antes do teste. Meu aparelho: ${device}.\n\n[QUIZ_V1 intent=duvida${answers.device ? ` device=${answers.device}` : ""}]`,
+    numberIndex
+  );
 
-  const checklist = [
-    `${INTEREST_LABEL[answers.interesse] ?? "Tudo"} liberado em Ultra HD 4K`,
-    `100% compatível com ${DEVICE_LABEL[answers.aparelho] ?? "seu aparelho"}`,
-    `${plan.features.find((f) => f.includes("telas")) ?? "Múltiplas telas simultâneas"}`,
-    ...(answers.esportes === "quero" ? ["Brasileirão, Libertadores e Champions ao vivo em 4K"] : []),
-    "Teste grátis de 30 min + garantia de 7 dias",
-  ];
+  const isHelp = intent === "ajuda";
+  const isActivate = intent === "ativar";
+  const isPrices = intent === "precos";
+
+  const badgeText = isHelp
+    ? "Suporte priorizado pra você"
+    : isActivate
+    ? "Caminho rápido de ativação"
+    : "Compatibilidade confirmada";
+
+  const title = isHelp ? (
+    <>Vamos resolver isso <span className="text-gradient-fire">agora</span></>
+  ) : isActivate ? (
+    <>Bora <span className="text-gradient-fire">reativar</span> seu acesso</>
+  ) : (
+    <>Achamos o melhor caminho pra <span className="text-gradient-fire">{devicePhrase}</span></>
+  );
+
+  const ctaText = isHelp
+    ? "Resolver no WhatsApp"
+    : isActivate
+    ? "Ativar / renovar no WhatsApp"
+    : "Receber meu teste no WhatsApp";
+
+  // Próximos passos do caminho de teste — mostra que as respostas foram usadas
+  const steps = isHelp
+    ? [
+        `Você conta o que houve — já sabemos que é: ${answers.problem ? PROBLEM_LABEL[answers.problem].toLowerCase() : "um problema no acesso"}`,
+        "Nosso suporte assume a parte técnica, passo a passo",
+        "Se precisar, indicamos outro aplicativo compatível",
+      ]
+    : isActivate
+    ? ["Você chama no WhatsApp", "Paga por Pix em segundos", "Acesso liberado em minutos"]
+    : [
+        `Indicamos o aplicativo certo pra ${devicePhrase} — com foto e link`,
+        "Te guiamos na instalação, sem termos técnicos",
+        "Liberamos seu teste grátis de 30 min na hora",
+      ];
 
   return (
     <motion.div
@@ -333,7 +425,7 @@ function ResultScreen({
       transition={{ type: "spring", stiffness: 120, damping: 16 }}
       className="px-5 sm:px-8 py-6 sm:py-8"
     >
-      {/* Selo aprovado */}
+      {/* Selo */}
       <div className="flex justify-center mb-4">
         <motion.div
           initial={{ scale: 0 }}
@@ -343,77 +435,108 @@ function ResultScreen({
         >
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span className="font-mono text-[10px] sm:text-xs font-bold tracking-widest text-emerald-400 uppercase">
-            Perfil aprovado para o teste grátis
+            {badgeText}
           </span>
         </motion.div>
       </div>
 
-      <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white text-center leading-tight mb-1.5">
-        Seu plano ideal é o{" "}
-        <span className="text-gradient-fire">{plan.title.replace("PLANO ", "")}</span>
+      <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white text-center leading-tight mb-2">
+        {title}
       </h3>
-      <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
-        Tudo incluso • Pix sem cartão • Sem mensalidade recorrente
-      </p>
 
-      {/* Preço: HERÓI é o valor real pago de uma vez. O /mês vem rotulado "equivale a". */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3 }}
-        className="bg-gradient-to-b from-emerald-950/70 to-emerald-900/20 border border-emerald-600/40 rounded-2xl px-4 py-4 mb-5 text-center"
-      >
-        <p className="font-mono text-[10px] font-bold tracking-widest text-emerald-500/80 uppercase mb-1">
-          {isOneTime ? "Pagamento único no Pix" : "Você paga"}
+      {!isHelp && !isActivate && (
+        <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
+          Você não precisa entender nada técnico — a gente te guia no WhatsApp.
         </p>
-        <p className="font-display font-black text-4xl sm:text-5xl text-emerald-400 leading-none">
-          {formatBRL(plan.price)}
+      )}
+      {isActivate && (
+        <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
+          Sem fila e sem burocracia: Pix direto no WhatsApp.
         </p>
-        <p className="font-sans text-xs sm:text-sm text-gray-200 mt-2">
-          {durationPhrase}
-          {plan.perMonthLabel && (
-            <>
-              {" "}— equivale a só <strong className="text-white">{plan.perMonthLabel}</strong>
-            </>
-          )}
+      )}
+      {isHelp && (
+        <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
+          Aparelho: <strong className="text-gray-200">{device}</strong> — já vai anotado na mensagem.
         </p>
-        <p className="font-sans text-[11px] text-gray-400 mt-1">
-          Dá <strong className="text-gray-200">{(plan.perDayLabel ?? "R$ 0,39 por dia").replace(" por dia", "/dia")}</strong> — mais barato que um cafezinho ☕
-        </p>
-        {yearlySavings > 0 && (
-          <p className="font-sans text-[11px] text-emerald-400/90 mt-2.5 border-t border-emerald-800/40 pt-2.5">
-            💚 E ainda economiza <strong>{formatBRL(yearlySavings)}/ano</strong> vs. o que você já gasta hoje
+      )}
+
+      {/* Preços compactos: só pra quem pediu preço */}
+      {isPrices && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.25 }}
+          className="bg-gray-950/70 border border-gray-800 rounded-2xl divide-y divide-gray-900 mb-5 overflow-hidden"
+        >
+          {PLANS.map((p) => (
+            <div key={p.id} className={`flex items-center justify-between px-4 py-3 ${p.recommended ? "bg-emerald-950/30" : ""}`}>
+              <div className="min-w-0">
+                <p className="font-display font-bold text-xs text-white uppercase tracking-wide">
+                  {p.title.replace("PLANO ", "")}
+                  {p.recommended && (
+                    <span className="ml-2 font-mono text-[8px] font-extrabold text-emerald-400 border border-emerald-700/50 rounded px-1.5 py-0.5 uppercase">
+                      Mais vendido
+                    </span>
+                  )}
+                </p>
+                <p className="font-sans text-[10px] text-gray-500">
+                  {p.id === "mensal" ? "por mês" : p.id === "semestral" ? "pagamento único pelos 6 meses" : "pagamento único pelo ano"}
+                  {p.perMonthLabel ? ` • equivale a ${p.perMonthLabel}` : ""}
+                </p>
+              </div>
+              <p className="font-display font-black text-base sm:text-lg text-emerald-400 shrink-0 ml-3">
+                {p.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </p>
+            </div>
+          ))}
+          <p className="px-4 py-2.5 font-sans text-[10px] text-gray-500 text-center">
+            Todos com teste grátis de 30 min antes de pagar + garantia de 7 dias
           </p>
-        )}
-      </motion.div>
+        </motion.div>
+      )}
 
-      {/* Checklist do que ele ganha */}
-      <div className="space-y-2 mb-6">
-        {checklist.map((item, i) => (
+      {/* Próximos passos numerados */}
+      <div className="space-y-2.5 mb-5">
+        {steps.map((item, i) => (
           <motion.div
             key={item}
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 + i * 0.12 }}
-            className="flex items-start gap-2.5"
+            transition={{ delay: 0.35 + i * 0.12 }}
+            className="flex items-start gap-3"
           >
-            <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" strokeWidth={3} />
+            <span className="w-5 h-5 rounded-full bg-red-600/20 border border-red-600/40 text-red-400 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+              {i + 1}
+            </span>
             <span className="font-sans text-xs sm:text-sm text-gray-200">{item}</span>
           </motion.div>
         ))}
       </div>
 
-      {/* Urgência: resultado reservado */}
-      <div className="flex items-center justify-center gap-2 mb-4">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-        </span>
-        <p className="font-sans text-[11px] sm:text-xs text-gray-400">
-          Seu teste grátis está reservado por{" "}
-          <span className="font-mono font-bold text-red-400">{minutes}:{seconds}</span>
-        </p>
-      </div>
+      {/* Garantia operacional: nunca beco sem saída */}
+      {!isActivate && (
+        <div className="flex items-start gap-2 bg-gray-950/70 border border-gray-900 rounded-xl px-3 py-2.5 mb-5">
+          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+          <p className="font-sans text-[11px] sm:text-xs text-gray-400 leading-relaxed">
+            Não achou o aplicativo? A gente indica outra opção compatível.{" "}
+            <strong className="text-gray-300">Você não fica na mão.</strong>
+          </p>
+        </div>
+      )}
+
+      {/* Urgência: só no caminho de teste */}
+      {intent === "teste" && (
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+          </span>
+          <p className="font-sans text-[11px] sm:text-xs text-gray-400">
+            {readyNow ? "Você tem prioridade agora" : "Seu teste fica reservado"} —{" "}
+            <span className="font-mono font-bold text-red-400">{minutes}:{seconds}</span>
+          </p>
+        </div>
+      )}
 
       {/* CTA principal */}
       <motion.a
@@ -423,9 +546,9 @@ function ResultScreen({
         id="btn_quiz_whatsapp"
         onClick={() =>
           trackWhatsAppClick("quiz_result", {
-            plano: plan.id,
-            interesse: answers.interesse,
-            aparelho: answers.aparelho,
+            intent,
+            device: answers.device,
+            ready: answers.ready,
           })
         }
         whileHover={{ scale: 1.02 }}
@@ -433,13 +556,26 @@ function ResultScreen({
         className="w-full bg-gradient-to-r from-[#25D366] to-[#1da851] hover:from-[#2ee374] hover:to-[#25D366] text-white font-display font-black text-sm sm:text-base py-4.5 rounded-2xl uppercase tracking-wider cursor-pointer flex items-center justify-center gap-2.5 shadow-lg shadow-green-600/30 animate-pulse-glow-green mb-3"
       >
         <MessageCircle className="w-5 h-5 fill-white/10" />
-        <span>Liberar meu teste grátis</span>
+        <span>{ctaText}</span>
         <ChevronRight className="w-5 h-5" />
       </motion.a>
 
-      <p className="text-center font-sans text-[10px] sm:text-[11px] text-gray-500 mb-4">
-        Sem cartão • Sem cadastro • Acesso liberado em segundos no WhatsApp
+      <p className="text-center font-sans text-[10px] sm:text-[11px] text-gray-500 mb-3">
+        Suas respostas já vão na mensagem — é só apertar enviar.
       </p>
+
+      {/* Secundário: dúvida antes do teste */}
+      {!isHelp && (
+        <a
+          href={doubtLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackWhatsAppClick("quiz_duvida", { device: answers.device })}
+          className="block w-full text-center font-sans text-[11px] text-gray-500 hover:text-gray-300 underline underline-offset-4 decoration-gray-700 transition-colors cursor-pointer mb-4"
+        >
+          Prefiro tirar uma dúvida primeiro
+        </a>
+      )}
 
       {/* Selos de confiança */}
       <div className="flex flex-wrap items-center justify-center gap-2.5 mb-4">
@@ -457,10 +593,10 @@ function ResultScreen({
         </div>
       </div>
 
-      {/* Secundário: ver todos os planos */}
+      {/* Ver landing completa */}
       <button
         onClick={onSeePlans}
-        className="w-full text-center font-display font-bold text-[11px] text-gray-500 hover:text-white underline underline-offset-4 decoration-red-600/40 uppercase tracking-widest transition-colors cursor-pointer"
+        className="w-full text-center font-display font-bold text-[11px] text-gray-600 hover:text-white underline underline-offset-4 decoration-red-600/40 uppercase tracking-widest transition-colors cursor-pointer"
       >
         Ver todos os planos e preços
       </button>
@@ -475,16 +611,20 @@ type Phase = "quiz" | "analyzing" | "result";
 export default function QuizFunnel() {
   // Abre já ligado: tráfego de anúncio cai direto no quiz ao abrir o site.
   const [open, setOpen] = useState(true);
-  const [stepIndex, setStepIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [stepId, setStepId] = useState<StepId>("intent");
+  const [history, setHistory] = useState<StepId[]>([]);
+  const [answers, setAnswers] = useState<Answers>({});
   const [selected, setSelected] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("quiz");
 
-  const step = STEPS[stepIndex];
-  const progress = phase === "quiz" ? (stepIndex / STEPS.length) * 100 : 100;
+  const step = STEPS[stepId];
+  const path = plannedPath(answers);
+  const stepIndex = Math.max(0, path.indexOf(stepId));
+  const totalSteps = path.length;
 
   const resetAndOpen = useCallback((source: string) => {
-    setStepIndex(0);
+    setStepId("intent");
+    setHistory([]);
     setAnswers({});
     setSelected(null);
     setPhase("quiz");
@@ -511,33 +651,45 @@ export default function QuizFunnel() {
     };
   }, [open]);
 
+  const finishQuiz = (finalAnswers: Answers) => {
+    setPhase("analyzing");
+    trackPixel("Lead", { content_name: "quiz_complete" });
+    trackCustomPixel("QuizComplete", {
+      intent: finalAnswers.intent,
+      device: finalAnswers.device,
+      score: computeScore(finalAnswers),
+    });
+    setTimeout(() => setPhase("result"), finalAnswers.intent === "ativar" ? 1600 : 2400);
+  };
+
   const handleSelect = (optionId: string) => {
     if (selected) return; // evita duplo clique
     setSelected(optionId);
-    const nextAnswers = { ...answers, [step.id]: optionId };
+    const nextAnswers = { ...answers, [stepId]: optionId };
     setAnswers(nextAnswers);
-    trackCustomPixel("QuizStep", { content_name: `${step.id}:${optionId}`, step: stepIndex + 1 });
+    trackCustomPixel("QuizStep", { content_name: `${stepId}:${optionId}` });
 
     setTimeout(() => {
       setSelected(null);
-      if (stepIndex + 1 >= STEPS.length) {
-        setPhase("analyzing");
-        trackPixel("Lead", { content_name: "quiz_complete" });
-        setTimeout(() => setPhase("result"), 2800);
+      const next = nextStepAfter(stepId, nextAnswers);
+      if (!next) {
+        finishQuiz(nextAnswers);
       } else {
-        setStepIndex((i) => i + 1);
+        setHistory((h) => [...h, stepId]);
+        setStepId(next);
       }
     }, 420);
   };
 
   const handleBack = () => {
-    if (stepIndex > 0) setStepIndex((i) => i - 1);
+    if (!history.length) return;
+    const prev = history[history.length - 1];
+    setHistory((h) => h.slice(0, -1));
+    setStepId(prev);
   };
 
   const handleClose = () => {
-    if (phase === "quiz" && stepIndex < STEPS.length) {
-      trackCustomPixel("QuizAbandon", { step: stepIndex + 1 });
-    }
+    if (phase === "quiz") trackCustomPixel("QuizAbandon", { step: stepId });
     setOpen(false);
   };
 
@@ -583,7 +735,7 @@ export default function QuizFunnel() {
                 <div className="flex items-center gap-2">
                   {phase === "quiz" && (
                     <span className="font-mono text-[10px] text-gray-500">
-                      {Math.min(stepIndex + 1, STEPS.length)}/{STEPS.length}
+                      {stepIndex + 1}/{totalSteps}
                     </span>
                   )}
                   <button
@@ -599,17 +751,18 @@ export default function QuizFunnel() {
               {/* Barra de progresso */}
               <div className="h-1.5 bg-gray-900 rounded-full overflow-hidden">
                 <motion.div
-                  animate={{ width: `${phase === "quiz" ? ((stepIndex + (selected ? 1 : 0)) / STEPS.length) * 100 : 100}%` }}
+                  animate={{
+                    width: `${phase === "quiz" ? ((stepIndex + (selected ? 1 : 0)) / totalSteps) * 100 : 100}%`,
+                  }}
                   transition={{ type: "spring", stiffness: 120, damping: 20 }}
                   className="h-full bg-gradient-to-r from-red-600 via-orange-500 to-amber-400 rounded-full"
-                  style={{ width: `${progress}%` }}
                 />
               </div>
             </div>
 
             {/* Corpo — troca de tela instantânea (sem exit animation: garante avanço mesmo com rAF throttled) */}
             <div className="flex-1">
-              {phase === "analyzing" && <AnalyzingScreen device={answers.aparelho} />}
+              {phase === "analyzing" && <AnalyzingScreen answers={answers} />}
 
               {phase === "result" && (
                 <ResultScreen answers={answers} onSeePlans={handleSeePlans} />
@@ -631,7 +784,7 @@ export default function QuizFunnel() {
                       {step.question}
                     </h3>
 
-                    {/* Fato educativo */}
+                    {/* Fato que reduz medo/fricção */}
                     <div className="flex items-start gap-2 bg-gray-950/70 border border-gray-900 rounded-xl px-3 py-2.5 mb-5">
                       <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                       <p className="font-sans text-[11px] sm:text-xs text-gray-400 leading-relaxed">
@@ -696,7 +849,7 @@ export default function QuizFunnel() {
                     </div>
 
                     {/* Voltar */}
-                    {stepIndex > 0 && (
+                    {history.length > 0 && (
                       <button
                         onClick={handleBack}
                         className="mt-5 inline-flex items-center gap-1 font-sans text-[11px] text-gray-600 hover:text-gray-300 transition-colors cursor-pointer"
