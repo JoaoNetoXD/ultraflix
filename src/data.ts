@@ -32,7 +32,7 @@ export const PLANS: Plan[] = [
     ctaText: "Quero o Mais Vendido",
     features: [
       "Teste grátis de 30 minutos antes de pagar",
-      "Tudo liberado: filmes, séries, novelas e Copa 2026",
+      "Tudo liberado: filmes, séries, novelas e futebol ao vivo",
       "4 telas simultâneas — família toda assiste junto",
       "Qualidade Ultra HD 4K",
       "Suporte VIP via WhatsApp",
@@ -53,7 +53,7 @@ export const PLANS: Plan[] = [
     ctaText: "Quero a Maior Economia",
     features: [
       "Teste grátis de 30 minutos antes de pagar",
-      "Tudo liberado: filmes, séries, novelas e Copa 2026",
+      "Tudo liberado: filmes, séries, novelas e futebol ao vivo",
       "5 telas simultâneas — a casa inteira conectada",
       "Qualidade Ultra HD 4K",
       "Suporte Ultra VIP 24h",
@@ -183,7 +183,7 @@ export const TESTIMONIALS: Testimonial[] = [
     avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=120&h=120&q=80",
     location: "Recife - PE",
     rating: 5,
-    comment: "Peguei justamente pra Copa e não travou um jogo sequer. Em 4K parece que tô dentro do estádio. Já indiquei pra todo mundo do trabalho.",
+    comment: "Peguei justamente pro Brasileirão e não travou um jogo sequer. Em 4K parece que tô dentro do estádio. Já indiquei pra todo mundo do trabalho.",
     date: "Há 1 dia",
     verified: true
   }

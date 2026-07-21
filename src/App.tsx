@@ -11,8 +11,8 @@ import Footer from "./components/Footer";
 import ValueStack from "./components/ValueStack";
 import AllInOneShowcase from "./components/AllInOneShowcase";
 import SocialProofToast from "./components/SocialProofToast";
-import { TRIAL_WHATSAPP_LINK_A } from "./config";
-import { trackPixel, trackCustomPixel, trackWhatsAppClick } from "./tracking";
+import QuizFunnel, { openQuiz } from "./components/QuizFunnel";
+import { trackPixel, trackCustomPixel } from "./tracking";
 
 export default function App() {
   const [showStickyBar, setShowStickyBar] = useState(false);
@@ -115,17 +115,17 @@ export default function App() {
           </span>
         </div>
 
-        <a
-          href={TRIAL_WHATSAPP_LINK_A}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackWhatsAppClick("barra_fixa_mobile")}
+        <button
+          onClick={() => openQuiz("barra_fixa_mobile")}
           id="btn_sticky_mobile_whatsapp"
           className="bg-[#25D366] active:scale-95 text-white font-display font-black text-xs px-5 py-3 rounded-xl uppercase tracking-wider shadow-lg shadow-green-600/20 cursor-pointer animate-heartbeat whitespace-nowrap"
         >
           Testar Grátis
-        </a>
+        </button>
       </div>
+
+      {/* QUIZ FUNNEL: qualifica o lead antes do WhatsApp (abre via openQuiz ou #quiz) */}
+      <QuizFunnel />
 
     </div>
   );

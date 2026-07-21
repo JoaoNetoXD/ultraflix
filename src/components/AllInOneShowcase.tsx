@@ -18,7 +18,7 @@ function slug(text: string): string {
 // Futebol misturado no meio dos gêneros — vitrine equilibrada para qualquer lead.
 const POSTERS_ROW_A = [
   { genre: "Cinema 4K", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.8" },
-  { genre: "Copa 2026", image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=400&h=560&q=70", rating: "10", live: true },
+  { genre: "Brasileirão", image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=400&h=560&q=70", rating: "10", live: true },
   { genre: "Romance", image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.1" },
   { genre: "Terror", image: "https://images.unsplash.com/photo-1585951237318-9ea5e175b891?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.3" },
   { genre: "Maratona", image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&h=560&q=70", rating: "9.6" },
@@ -53,8 +53,8 @@ const CATEGORY_CARDS = [
     icon: Trophy,
     tag: "AO VIVO",
     live: true,
-    title: "Copa 2026 e futebol",
-    desc: "Todos os jogos ao vivo com narração BR: Copa, Brasileirão, Champions.",
+    title: "Futebol ao vivo",
+    desc: "Todos os jogos com narração BR: Brasileirão, Libertadores, Champions.",
   },
   {
     icon: Baby,
@@ -69,8 +69,8 @@ const CHIPS = [
   "🎬 Filmes 4K",
   "📺 Séries",
   "💛 Novelas",
-  "⚽ Copa do Mundo 2026",
   "⚽ Brasileirão",
+  "⚽ Libertadores",
   "⚽ Champions League",
   "🎌 Animes e Doramas",
   "🧸 Infantil",
@@ -146,7 +146,7 @@ export default function AllInOneShowcase({ onScrollToPlans }: AllInOneShowcasePr
           </h2>
           <p className="font-sans text-sm sm:text-base text-gray-300 mt-5 max-w-xl mx-auto">
             Filme pra sexta à noite, novela de todo dia, maratona de série no fim de semana e{" "}
-            <strong className="text-white">a Copa do Mundo 2026 ao vivo</strong> — sem pular de app em app e sem pagar várias assinaturas.
+            <strong className="text-white">o jogo do seu time ao vivo em 4K</strong> — sem pular de app em app e sem pagar várias assinaturas.
           </p>
         </div>
       </div>

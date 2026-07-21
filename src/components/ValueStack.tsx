@@ -5,7 +5,7 @@ import { Check, X, Play } from "lucide-react";
 const ROWS = [
   { label: "Filmes em cartaz no cinema", others: false },
   { label: "Séries completas sem anúncio", others: true },
-  { label: "Futebol ao vivo (Copa, Brasileirão, Champions)", others: false },
+  { label: "Futebol ao vivo (Brasileirão, Libertadores, Champions)", others: false },
   { label: "Canais de TV 24 horas", others: false },
   { label: "Desenhos e conteúdo infantil", others: true },
   { label: "Qualidade 4K Ultra HD", others: true },

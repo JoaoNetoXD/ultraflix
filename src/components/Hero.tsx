@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronRight, ShieldCheck, Zap, Star, MessageCircle, Gift, Play, CheckCheck, Clapperboard, Popcorn, Heart, Trophy } from "lucide-react";
-import { TRIAL_WHATSAPP_LINK_A, TRIAL_WHATSAPP_LINK_B } from "../config";
-import { trackWhatsAppClick } from "../tracking";
+import { openQuiz } from "./QuizFunnel";
 
 interface HeroProps {
   onScrollToPlans: () => void;
@@ -13,7 +12,7 @@ const CATEGORIES = [
   { icon: Clapperboard, label: "Filmes de Cinema", live: false },
   { icon: Popcorn, label: "Séries Completas", live: false },
   { icon: Heart, label: "Novelas do Dia", live: false },
-  { icon: Trophy, label: "Copa 2026 ao Vivo", live: true },
+  { icon: Trophy, label: "Futebol ao Vivo", live: true },
 ] as const;
 
 function LiveCategoryBadge() {
@@ -217,11 +216,8 @@ function WhatsAppSimulation() {
 
       {/* CTA footer: aparece quando a conversa termina, mas sempre clicável */}
       <div className="bg-[#0f1b21] border-t border-gray-900 p-4 space-y-2.5">
-        <motion.a
-          href={TRIAL_WHATSAPP_LINK_B}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackWhatsAppClick("hero_chat_simulacao")}
+        <motion.button
+          onClick={() => openQuiz("hero_chat_simulacao")}
           id="btn_hero_chat_cta"
           animate={finished ? { scale: [1, 1.03, 1] } : {}}
           transition={{ duration: 1.4, repeat: Infinity }}
@@ -230,7 +226,7 @@ function WhatsAppSimulation() {
           <MessageCircle className="w-4.5 h-4.5 fill-white/10" />
           <span>Quero Esse Teste Grátis</span>
           <ChevronRight className="w-4 h-4" />
-        </motion.a>
+        </motion.button>
         <p className="text-center font-sans text-[10px] text-gray-500 flex items-center justify-center gap-1.5">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
@@ -316,8 +312,8 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
             transition={{ delay: 0.2 }}
             className="font-sans text-sm sm:text-lg text-gray-300 max-w-xl leading-relaxed mb-6 px-2 sm:px-0"
           >
-            Lançamentos de cinema, séries completas, Brasileirão, Champions e a{" "}
-            <strong className="text-white">Copa do Mundo 2026 ao vivo em 4K</strong>.
+            Lançamentos de cinema, séries completas e{" "}
+            <strong className="text-white">Brasileirão, Libertadores e Champions ao vivo em 4K</strong>.
             Peça no WhatsApp e <strong className="text-emerald-400">assista 30 minutos grátis</strong> antes de pagar qualquer coisa.
           </motion.p>
 
@@ -333,11 +329,8 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
           </motion.p>
 
           {/* Big Green WhatsApp Magnetic Button */}
-          <motion.a
-            href={TRIAL_WHATSAPP_LINK_A}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackWhatsAppClick("hero")}
+          <motion.button
+            onClick={() => openQuiz("hero")}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             id="btn_hero_teste_gratis"
@@ -349,7 +342,7 @@ export default function Hero({ onScrollToPlans }: HeroProps) {
               <span>QUERO MEU TESTE GRÁTIS</span>
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
-          </motion.a>
+          </motion.button>
 
           <p className="font-sans text-[11px] text-gray-500 mb-3">
             30 minutos grátis no WhatsApp • Sem cartão • Sem cadastro • Sem compromisso
