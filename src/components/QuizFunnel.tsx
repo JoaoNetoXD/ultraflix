@@ -344,43 +344,31 @@ function ResultScreen({
         <span className="text-gradient-fire">{plan.title.replace("PLANO ", "")}</span>
       </h3>
       <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
-        {plan.perMonthLabel ? (
-          <>
-            Sai por <strong className="text-emerald-400">{plan.perMonthLabel}</strong> — {plan.perDayLabel}
-          </>
-        ) : (
-          <>Apenas {formatBRL(plan.price)}{plan.durationText}</>
-        )}
+        Tudo incluso • Pix sem cartão • Sem mensalidade escondida
       </p>
 
-      {/* Economia personalizada */}
-      {yearlySavings > 0 ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="bg-gradient-to-r from-emerald-950/60 to-emerald-900/20 border border-emerald-600/30 rounded-2xl px-4 py-3.5 mb-5 text-center"
-        >
-          <p className="font-sans text-[11px] sm:text-xs text-gray-300">
-            Pelo que você gasta hoje, com a Ultraflix você economiza até
+      {/* Preço: ancora no valor BAIXO (herói) — nada de número gigante que confunde */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.3 }}
+        className="bg-gradient-to-b from-emerald-950/70 to-emerald-900/20 border border-emerald-600/40 rounded-2xl px-4 py-4 mb-5 text-center"
+      >
+        <p className="font-mono text-[10px] font-bold tracking-widest text-emerald-500/80 uppercase mb-1">
+          Sai por apenas
+        </p>
+        <p className="font-display font-black text-4xl sm:text-5xl text-emerald-400 leading-none">
+          {plan.perMonthLabel ?? `${formatBRL(plan.price)}${plan.durationText}`}
+        </p>
+        <p className="font-sans text-xs sm:text-sm text-gray-200 mt-2">
+          Dá <strong className="text-white">{(plan.perDayLabel ?? "R$ 0,39 por dia").replace(" por dia", "/dia")}</strong> — mais barato que um cafezinho ☕
+        </p>
+        {yearlySavings > 0 && (
+          <p className="font-sans text-[11px] text-emerald-400/90 mt-2.5 border-t border-emerald-800/40 pt-2.5">
+            💚 E ainda economiza <strong>{formatBRL(yearlySavings)}/ano</strong> vs. o que você já gasta hoje
           </p>
-          <p className="font-display font-black text-2xl sm:text-3xl text-emerald-400">
-            {formatBRL(yearlySavings)} <span className="text-sm font-bold text-emerald-500/80">por ano</span>
-          </p>
-        </motion.div>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="bg-gradient-to-r from-red-950/50 to-orange-950/20 border border-red-600/30 rounded-2xl px-4 py-3.5 mb-5 text-center"
-        >
-          <p className="font-sans text-[11px] sm:text-xs text-gray-300">
-            Por menos de <strong className="text-white">{plan.perDayLabel ?? "R$ 0,39 por dia"}</strong> você
-            tem cinema, séries, novelas e futebol ao vivo — tudo num app só.
-          </p>
-        </motion.div>
-      )}
+        )}
+      </motion.div>
 
       {/* Checklist do que ele ganha */}
       <div className="space-y-2 mb-6">
