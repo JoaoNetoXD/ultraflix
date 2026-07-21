@@ -290,6 +290,15 @@ function ResultScreen({
   const planYearlyCost = plan.id === "anual" ? plan.price : plan.price * 2;
   const yearlySavings = Math.max(0, yearlyNow - planYearlyCost);
 
+  // Deixa CLARO que é pagamento único por um período — não mensalidade.
+  const isOneTime = plan.id !== "mensal";
+  const durationPhrase =
+    plan.id === "anual"
+      ? "pelo ano inteiro"
+      : plan.id === "semestral"
+      ? "pelos 6 meses inteiros"
+      : "no mês";
+
   const wantsSports = answers.esportes === "quero" || answers.esportes === "talvez";
 
   // Mensagem qualificada: atendente recebe o perfil completo do lead
@@ -344,10 +353,10 @@ function ResultScreen({
         <span className="text-gradient-fire">{plan.title.replace("PLANO ", "")}</span>
       </h3>
       <p className="font-sans text-xs sm:text-sm text-gray-400 text-center mb-5">
-        Tudo incluso • Pix sem cartão • Sem mensalidade escondida
+        Tudo incluso • Pix sem cartão • Sem mensalidade recorrente
       </p>
 
-      {/* Preço: ancora no valor BAIXO (herói) — nada de número gigante que confunde */}
+      {/* Preço: HERÓI é o valor real pago de uma vez. O /mês vem rotulado "equivale a". */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -355,13 +364,21 @@ function ResultScreen({
         className="bg-gradient-to-b from-emerald-950/70 to-emerald-900/20 border border-emerald-600/40 rounded-2xl px-4 py-4 mb-5 text-center"
       >
         <p className="font-mono text-[10px] font-bold tracking-widest text-emerald-500/80 uppercase mb-1">
-          Sai por apenas
+          {isOneTime ? "Pagamento único no Pix" : "Você paga"}
         </p>
         <p className="font-display font-black text-4xl sm:text-5xl text-emerald-400 leading-none">
-          {plan.perMonthLabel ?? `${formatBRL(plan.price)}${plan.durationText}`}
+          {formatBRL(plan.price)}
         </p>
         <p className="font-sans text-xs sm:text-sm text-gray-200 mt-2">
-          Dá <strong className="text-white">{(plan.perDayLabel ?? "R$ 0,39 por dia").replace(" por dia", "/dia")}</strong> — mais barato que um cafezinho ☕
+          {durationPhrase}
+          {plan.perMonthLabel && (
+            <>
+              {" "}— equivale a só <strong className="text-white">{plan.perMonthLabel}</strong>
+            </>
+          )}
+        </p>
+        <p className="font-sans text-[11px] text-gray-400 mt-1">
+          Dá <strong className="text-gray-200">{(plan.perDayLabel ?? "R$ 0,39 por dia").replace(" por dia", "/dia")}</strong> — mais barato que um cafezinho ☕
         </p>
         {yearlySavings > 0 && (
           <p className="font-sans text-[11px] text-emerald-400/90 mt-2.5 border-t border-emerald-800/40 pt-2.5">
