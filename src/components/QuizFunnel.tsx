@@ -468,7 +468,8 @@ function ResultScreen({
 type Phase = "quiz" | "analyzing" | "result";
 
 export default function QuizFunnel() {
-  const [open, setOpen] = useState(false);
+  // Abre já ligado: tráfego de anúncio cai direto no quiz ao abrir o site.
+  const [open, setOpen] = useState(true);
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [selected, setSelected] = useState<string | null>(null);
@@ -486,14 +487,14 @@ export default function QuizFunnel() {
     trackCustomPixel("QuizStart", { content_name: source });
   }, []);
 
-  // Abre via evento global (qualquer CTA da página) ou via #quiz na URL
+  // Auto-abre no load (tráfego de anúncio) + reabre via CTA/#quiz.
   useEffect(() => {
+    trackCustomPixel("QuizStart", { content_name: "auto_load" });
     const handler = (e: Event) => {
       const source = (e as CustomEvent).detail?.source ?? "direct";
       resetAndOpen(source);
     };
     window.addEventListener(OPEN_QUIZ_EVENT, handler);
-    if (window.location.hash === "#quiz") resetAndOpen("url_hash");
     return () => window.removeEventListener(OPEN_QUIZ_EVENT, handler);
   }, [resetAndOpen]);
 
